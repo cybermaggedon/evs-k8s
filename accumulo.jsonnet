@@ -14,30 +14,19 @@
 // for Kubernetes.
 
 // Import KSonnet library.
-//local k = import "ksonnet.beta.2/k.libsonnet";
 local k = import "defs.libsonnet";
-
-// Short-cuts to various objects in the KSonnet library.
-local depl = k.extensions.v1beta1.deployment;
-local container = depl.mixin.spec.template.spec.containersType;
-local containerPort = container.portsType;
-local resources = container.resourcesType;
-local env = container.envType;
-local svc = k.core.v1.service;
-local svcPort = svc.mixin.spec.portsType;
-local svcLabels = svc.mixin.metadata.labels;
 
 // Ports used by deployments
 local ports() = [
-    containerPort.newNamed("master", 9999),
-    containerPort.newNamed("tablet-server", 9997),
-    containerPort.newNamed("gc", 50091),
-    containerPort.newNamed("monitor", 9995),
-    containerPort.newNamed("monitor-log", 4560),
-    containerPort.newNamed("tracer", 12234),
-    containerPort.newNamed("proxy", 42424),
-    containerPort.newNamed("slave", 10002),
-    containerPort.newNamed("replication", 10001)
+    k.containerPort.newNamed("master", 9999),
+    k.containerPort.newNamed("tablet-server", 9997),
+    k.containerPort.newNamed("gc", 50091),
+    k.containerPort.newNamed("monitor", 9995),
+    k.containerPort.newNamed("monitor-log", 4560),
+    k.containerPort.newNamed("tracer", 12234),
+    k.containerPort.newNamed("proxy", 42424),
+    k.containerPort.newNamed("slave", 10002),
+    k.containerPort.newNamed("replication", 10001)
 ];
 
 // Function, returns a Zookeeper list, comma separated list of ZK IDs.
@@ -57,61 +46,61 @@ local slaveList(count, id) =
 local envs(slaves, zks, id, proc) = [
 
     // List of Zookeepers.
-    env.new("ZOOKEEPERS", zookeeperList(zks)),
+    k.env.new("ZOOKEEPERS", zookeeperList(zks)),
 
     // List of master, gc, monitor, tracer and slave hosts.  This does the
     // thing where MY_IP is used instead of a hostname when the node in
     // question supplies the function.
-    env.new("MASTER_HOSTS", "master.accumulo"),
-    env.new("GC_HOSTS", "gc.accumulo"),
-    env.new("MONITOR_HOSTS", "monitor.accumulo"),
-    env.new("TRACER_HOSTS", "tracer.accumulo"),
+    k.env.new("MASTER_HOSTS", "master.accumulo"),
+    k.env.new("GC_HOSTS", "gc.accumulo"),
+    k.env.new("MONITOR_HOSTS", "monitor.accumulo"),
+    k.env.new("TRACER_HOSTS", "tracer.accumulo"),
 
     // Slaves only need to know about the master, don't need to know about
     // all the other slaves.  This is only a deal, because in a big cluster,
     // this would generate a lot of config.
     if id >= 0 then
-        env.new("SLAVE_HOSTS", "slave%04d.accumulo" % id)
+        k.env.new("SLAVE_HOSTS", "slave%04d.accumulo" % id)
     else		 
-	env.new("SLAVE_HOSTS", slaveList(slaves, id)),
+	k.env.new("SLAVE_HOSTS", slaveList(slaves, id)),
 
     // HDFS references.
-    env.new("HDFS_VOLUMES", "hdfs://hadoop0000:9000/accumulo"),
-    env.new("NAMENODE_URI", "hdfs://hadoop0000:9000/"),
+    k.env.new("HDFS_VOLUMES", "hdfs://hadoop0000:9000/accumulo"),
+    k.env.new("NAMENODE_URI", "hdfs://hadoop0000:9000/"),
 
     // Sizing parameters.
-    env.new("MEMORY_MAPS_MAX", "50M"),
-    env.new("CACHE_DATA_SIZE", "5M"),
-    env.new("CACHE_INDEX_SIZE", "10M"),
-    env.new("SORT_BUFFER_SIZE", "10M"),
-    env.new("WALOG_MAX_SIZE", "50M")
+    k.env.new("MEMORY_MAPS_MAX", "50M"),
+    k.env.new("CACHE_DATA_SIZE", "5M"),
+    k.env.new("CACHE_INDEX_SIZE", "10M"),
+    k.env.new("SORT_BUFFER_SIZE", "10M"),
+    k.env.new("WALOG_MAX_SIZE", "50M")
 
 ];
 
 // Container definition for non-slave containers.
 local containers(proc, slaves, xks) = [
-    container.new("accumulo", "cybermaggedon/accumulo-gaffer:1.1.2") +
-        container.ports(ports()) +
-	container.command(["/start-process", proc]) +
-	container.env(envs(slaves, xks, -1, proc)) +
-	container.mixin.resources.limits({
+    k.container.new("accumulo", "cybermaggedon/accumulo-gaffer:1.12.0b") +
+        k.container.ports(ports()) +
+	k.container.command(["/start-process", proc]) +
+	k.container.env(envs(slaves, xks, -1, proc)) +
+	k.container.limits({
 	    memory: "128M", cpu: "0.5"
 	}) +
-	container.mixin.resources.requests({
+	k.container.requests({
 	    memory: "128M", cpu: "0.1"
 	})
 ];
 
 // Container definition for slave containers.
 local slaveContainers(id, slaves, xks) = [
-    container.new("accumulo", "cybermaggedon/accumulo-gaffer:1.1.2") +
-        container.ports(ports()) +
-	container.command(["/start-process", "tserver"]) +
-	container.env(envs(slaves, xks, id, "tserver")) +
-	container.mixin.resources.limits({
+    k.container.new("accumulo", "cybermaggedon/accumulo-gaffer:1.1.2") +
+        k.container.ports(ports()) +
+	k.container.command(["/start-process", "tserver"]) +
+	k.container.env(envs(slaves, xks, id, "tserver")) +
+	k.container.limits({
 	    memory: "128M", cpu: "0.5"
 	}) +
-	container.mixin.resources.requests({
+	k.container.requests({
 	    memory: "128M", cpu: "0.2"
 	})
 ];
@@ -119,35 +108,53 @@ local slaveContainers(id, slaves, xks) = [
 // Deployment definition for non-slave deployments.  proc is the process to
 // run, slaves is the number of slaves, zks is the number of Zookeepers.
 local deployment(proc, slaves, zks) =
-    depl.new("accumulo-%s" % proc, 1,
-	     containers(proc, slaves, zks),
-	     {app: "accumulo", component: "gaffer"}) +
-    depl.mixin.spec.template.spec.hostname(proc) +
-    depl.mixin.spec.template.spec.subdomain("accumulo");
+    local name = "accumulo-%s" % proc;
+    k.deployment.new(name) +
+        k.deployment.containers(containers(proc, slaves, zks)) +
+	k.deployment.labels({
+            instance: name, app: "accumulo", component: "gaffer"
+        }) +
+	k.deployment.containerLabels({
+            instance: name, app: "accumulo", component: "gaffer"
+        }) +
+	k.deployment.selector({
+            instance: name, app: "accumulo", component: "gaffer"
+        }) +
+        k.deployment.hostname(proc) +
+        k.deployment.subdomain("accumulo");
 
 // Deployment definition for non-slave deployments.  id is the slave number
 // slaves is the number of slaves, zks is the number of Zookeepers.
 local slaveDeployment(id, slaves, zks) =
-    depl.new("accumulo-slave%04d" % id, 1,
-	     slaveContainers(id, slaves, zks),
-	     {app: "accumulo", component: "gaffer"}) +
-    depl.mixin.spec.template.spec.hostname("slave%04d" % id) +
-    depl.mixin.spec.template.spec.subdomain("accumulo");
+    local name = "accumulo-slave%04d" % id;
+    k.deployment.new(name) + 
+        k.deployment.containers(slaveContainers(id, slaves, zks)) +
+	k.deployment.labels({
+            instance: name, app: "accumulo", component: "gaffer"
+        }) +
+	k.deployment.containerLabels({
+            instance: name, app: "accumulo", component: "gaffer"
+        }) +
+	k.deployment.selector({
+            instance: name, app: "accumulo", component: "gaffer"
+        }) +
+        k.deployment.hostname("slave%04d" % id) +
+        k.deployment.subdomain("accumulo");
 
 // Ports declared on the other services.
 local servicePorts = [
-    svcPort.newNamed("master", 9999, 9999) + svcPort.protocol("TCP"),
-    svcPort.newNamed("gc", 50091, 50091) + svcPort.protocol("TCP"),
-    svcPort.newNamed("monitor", 9995, 9995) + svcPort.protocol("TCP"),
-    svcPort.newNamed("tracer", 12234, 12234) + svcPort.protocol("TCP"),
-    svcPort.newNamed("proxy", 42424, 42424) + svcPort.protocol("TCP"),
-    svcPort.newNamed("slave", 10002, 10002) + svcPort.protocol("TCP"),
-    svcPort.newNamed("replication", 10001, 10001) + svcPort.protocol("TCP")
+    k.svcPort.newNamed("master", 9999, 9999) + k.svcPort.protocol("TCP"),
+    k.svcPort.newNamed("gc", 50091, 50091) + k.svcPort.protocol("TCP"),
+    k.svcPort.newNamed("monitor", 9995, 9995) + k.svcPort.protocol("TCP"),
+    k.svcPort.newNamed("tracer", 12234, 12234) + k.svcPort.protocol("TCP"),
+    k.svcPort.newNamed("proxy", 42424, 42424) + k.svcPort.protocol("TCP"),
+    k.svcPort.newNamed("slave", 10002, 10002) + k.svcPort.protocol("TCP"),
+    k.svcPort.newNamed("replication", 10001, 10001) + k.svcPort.protocol("TCP")
 ];
 
 // Ports declared on the slave services.
 local slavePorts = [
-    svcPort.newNamed("slave", 9997, 9997) + svcPort.protocol("TCP")
+    k.svcPort.newNamed("slave", 9997, 9997) + k.svcPort.protocol("TCP")
 ];
 
 // Function which returns resource definitions - deployments and services.
@@ -168,10 +175,12 @@ local resources(c) =
     
 ] + [
 
-    // Services for the Accumulo master, gc, tracer, monitor.
-    svc.new("accumulo", {app: "accumulo-master"}, servicePorts) +
-	svcLabels({app: "accumulo"}) +
-	svc.mixin.spec.clusterIp("None")
+    // Services for the Accumulo master
+    k.svc.new("accumulo") +
+        k.svc.ports(servicePorts) +
+	k.svc.labels({app: "accumulo", component: "gaffer"}) +
+	k.svc.clusterIp("None") +
+        k.svc.selector({app: "accumulo-master"})
     
 ];
 // Return the function which creates resources.

@@ -1,13 +1,88 @@
-
 {
+    deployment:: import "deployment.libsonnet",
 
+    container:: import "container.libsonnet",
+
+    env:: {
+
+        new(n, v):: { name: n, value: v }
+
+    },
+
+    mount:: {
+        new(vol, mpt):: {
+            name: vol,
+            mountPath: mpt,
+            readOnly: false
+        }
+    },
+
+    volume:: {
+        new(n):: {
+            name: n
+        }
+    },
+
+    gceDisk:: {
+        fsType(f):: { gcePersistentDisk+: { fsType: f } },
+        pdName(d):: { gcePersistentDisk+: { pdName: d } }
+    },
+
+    svcPort:: {
+        newNamed(name, port, target):: {
+            name: name, port: port, targetPort: target
+        },
+        protocol(p):: {
+            protocol: p
+        }
+    },
+
+    svc:: {
+
+        new(n):: {
+            apiVersion: "v1",
+            kind: "Service",
+            metadata+: {
+                name: n
+            }
+        },
+
+        labels(l):: {
+            metadata+: { labels: l }
+        },
+
+        ports(p):: {
+            spec+: { ports: p }
+        },
+
+        selector(s):: {
+            spec+: { selector: s }
+        },
+
+        clusterIp(x):: {
+            spec+: {
+                clusterIP: x
+            }
+        }
+
+    },
+
+    containerPort:: {
+
+        newNamed(name, port):: {
+            containerPort: port,
+            name: name
+        }
+    
+    },
+    
     extensions:: {
         v1beta1:: $.extensions,
 
         deployment:: {
 
             new(name, replicas, containers, labels):: {
-                apiVersion: "extensions/v1beta1",
+                apiVersion: "apps/v1",
                 kind: "Deployment",
                 metadata: {
                   name: name,
@@ -83,7 +158,7 @@
 
     },
 
-    container:: {
+    scontainer:: {
 
         new(name, image):: {
            name: name,
@@ -153,12 +228,6 @@
             }
 
         }
-
-    },
-
-    env:: {
-
-        new(n, v):: { name: n, value: v }
 
     },
 

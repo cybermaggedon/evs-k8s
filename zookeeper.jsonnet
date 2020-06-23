@@ -7,65 +7,61 @@
 // Import KSonnet library.
 local k = import "defs.libsonnet";
 
-// Short-cuts to various objects in the KSonnet library.
-local depl = k.extensions.v1beta1.deployment;
-local container = depl.mixin.spec.template.spec.containersType;
-local containerPort = container.portsType;
-local mount = container.volumeMountsType;
-local volume = depl.mixin.spec.template.spec.volumesType;
-local resources = container.resourcesType;
-local env = container.envType;
-local gceDisk = volume.mixin.gcePersistentDisk;
-local svc = k.core.v1.service;
-local svcPort = svc.mixin.spec.portsType;
-local svcLabels = svc.mixin.metadata.labels;
-
 // Ports used by deployments
 local ports() = [
-    containerPort.newNamed("internal1", 2888),
-    containerPort.newNamed("internal2", 3888),
-    containerPort.newNamed("service", 2181)
+    k.containerPort.newNamed("internal1", 2888),
+    k.containerPort.newNamed("internal2", 3888),
+    k.containerPort.newNamed("service", 2181)
 ];
 
 // Volume mount points
 local volumeMounts(id) = [
-    mount.new("data", "/data")
+    k.mount.new("data", "/data")
 ];
 
 // Environment variables
 local envs(id, zks) = [
-    env.new("ZOOKEEPER_MYID", "%d" % (id + 1)),
-    env.new("ZOOKEEPERS", zks)
+    k.env.new("ZOOKEEPER_MYID", "%d" % (id + 1)),
+    k.env.new("ZOOKEEPERS", zks)
 ];
 
 // Container definition.
 local containers(id, zks) = [
-    container.new("zookeeper", "cybermaggedon/zookeeper:3.4.10b") +
-        container.ports(ports()) +
-        container.volumeMounts(volumeMounts(id)) +
-	container.env(envs(id, zks)) +
-	container.mixin.resources.limits({
+    k.container.new("zookeeper", "cybermaggedon/zookeeper:3.6.1") +
+        k.container.ports(ports()) +
+        k.container.volumeMounts(volumeMounts(id)) +
+	k.container.env(envs(id, zks)) +
+	k.container.limits({
 	    memory: "256M", cpu: "0.5"
 	}) +
-	container.mixin.resources.requests({
+	k.container.requests({
 	    memory: "256M", cpu: "0.15"
 	})
 ];
 
 // Volumes - this invokes a GCE permanent disk.
 local volumes(id) = [
-    volume.name("data") + gceDisk.fsType("ext4") +
-	gceDisk.pdName("zookeeper-%d" % (id + 1))
+    k.volume.new("data") + k.gceDisk.fsType("ext4") +
+	k.gceDisk.pdName("zookeeper-%d" % (id + 1))
 ];
 
 // Deployment definition.  id is the node ID, zks is number Zookeepers.
-local deployment(id, zks) = 
-    depl.new("zk%d" % (id + 1), 1,
-	     containers(id, zks),
-	     {app: "zookeeper", component: "gaffer"}) +
-    depl.mixin.spec.template.spec.hostname("zk%d" % (id + 1)) +
-    depl.mixin.spec.template.spec.subdomain("zk") +
-    depl.mixin.spec.template.spec.volumes(volumes(id));
+local deployment(id, zks) =
+    local name = "zk%d" % (id + 1);
+    k.deployment.new(name) +
+        k.deployment.containers(containers(id, zks)) +
+        k.deployment.labels({
+            instance: name, app: "zk", component: "gaffer"
+        }) +
+        k.deployment.containerLabels({
+            instance: name, app: "zk", component: "gaffer"
+        }) +
+        k.deployment.selector({
+            instance: name, app: "zk", component: "gaffer"
+        }) +
+        k.deployment.hostname("zk%d" % (id + 1)) +
+        k.deployment.subdomain("zk") +
+        k.deployment.volumes(volumes(id));
 
 // Function, returns a Zookeeper list, comma separated list of ZK IDs.
 local zookeeperList(count) =
@@ -73,9 +69,9 @@ local zookeeperList(count) =
 
 // Ports declared on the ZK service.
 local servicePorts = [
-    svcPort.newNamed("internal1", 2888, 2888) + svcPort.protocol("TCP"),
-    svcPort.newNamed("internal2", 3888, 3888) + svcPort.protocol("TCP"),
-    svcPort.newNamed("service", 2181, 2181) + svcPort.protocol("TCP")
+    k.svcPort.newNamed("internal1", 2888, 2888) + k.svcPort.protocol("TCP"),
+    k.svcPort.newNamed("internal2", 3888, 3888) + k.svcPort.protocol("TCP"),
+    k.svcPort.newNamed("service", 2181, 2181) + k.svcPort.protocol("TCP")
 ];
 
 // Function which returns resource definitions - deployments and services.
@@ -89,8 +85,11 @@ local resources(config) = [
 
     // One service for each Zookeeper to allow it to be discovered by
     // Zookeeper name.
-    svc.new("zk", {app: "zookeeper"}, servicePorts) +
-    svc.mixin.spec.clusterIp("None")
+    k.svc.new("zk") +
+        k.svc.labels({app: "zk", component: "gaffer"}) +
+        k.svc.selector({app: "zk"}) +
+        k.svc.ports(servicePorts) +
+        k.svc.clusterIp("None")
     
 ];
 
