@@ -41,8 +41,8 @@ local containers(id, zks) = [
 
 // Volumes - this invokes a GCE permanent disk.
 local volumes(id) = [
-    k.volume.new("data") + k.gceDisk.fsType("ext4") +
-	k.gceDisk.pdName("zookeeper-%d" % (id + 1))
+    k.volume.new("data") +
+        k.volume.pvc("zookeeper-%04d" % id)
 ];
 
 // Deployment definition.  id is the node ID, zks is number Zookeepers.
@@ -74,6 +74,17 @@ local servicePorts = [
     k.svcPort.newNamed("service", 2181, 2181) + k.svcPort.protocol("TCP")
 ];
 
+local storageClasses = [
+    k.sc.new("zookeeper")
+];
+
+local pvcs(zks) = [
+    k.pvc.new("zookeeper-%04d" % id) +
+        k.pvc.storageClass("zookeeper") +
+        k.pvc.size("1G")
+        for id in std.range(0, zks-1)
+];
+
 // Function which returns resource definitions - deployments and services.
 local resources(config) = [
 
@@ -91,7 +102,7 @@ local resources(config) = [
         k.svc.ports(servicePorts) +
         k.svc.clusterIp("None")
     
-];
+] + storageClasses + pvcs(config.zookeepers);
 
 // Return the function which creates resources.
 resources

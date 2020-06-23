@@ -25,5 +25,5 @@ local resources =
     wildfly(config);	      // Wildfly / REST API.
 
 // Output the resources.
-k.core.v1.list.new(resources)
+k.list.new(resources)
 

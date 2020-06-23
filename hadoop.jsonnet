@@ -55,11 +55,10 @@ local containers(id, replication) = [
 	})
 ];
 
-// Volumes - this invokes a GCE permanent disk.
+// Volumes - this invokes a pvc
 local volumes(id) = [
     k.volume.new("data") +
-        k.gceDisk.fsType("ext4") +
-	k.gceDisk.pdName("hadoop-%04d" % id)
+        k.volume.pvc("hadoop-%04d" % id)
 ];
 
 // Deployment definition.  id is the node ID.

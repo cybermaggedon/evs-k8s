@@ -3,6 +3,10 @@
 
     container:: import "container.libsonnet",
 
+    list:: {
+        new(x):: { apiVersion: "v1", items: x, kind: "List"}
+    },
+
     env:: {
 
         new(n, v):: { name: n, value: v }
@@ -63,6 +67,11 @@
     volume:: {
         new(n):: {
             name: n
+        },
+        pvc(n):: {
+            persistentVolumeClaim: {
+                claimName: n
+            }
         }
     },
 
@@ -280,9 +289,6 @@
 
     core:: {
         v1:: $.core,
-        list:: {
-            new(x):: { apiVersion: "v1", items: x, kind: "List"}
-        },
         service:: {
             new(n, sel, ports):: {
                 apiVersion: "v1",
