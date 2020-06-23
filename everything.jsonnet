@@ -5,7 +5,7 @@ local config = import "config.jsonnet";
 
 // Import definitions for Gaffer stack
 local imports = [
-    import "gaffer.jsonnet",
+    import "graph.jsonnet",
     import "elasticsearch.jsonnet",
     import "kibana.jsonnet"
 ];

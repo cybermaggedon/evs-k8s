@@ -5,7 +5,7 @@
       hadoop_replication: 1,	// Data replication level on HDFS.
       zookeepers: 1,		// Number of Zookeepers.
       accumulo_slaves: 1,	// Number of Accumulo slaves.
-      wildflys: 1,		// Number of Wildfly replicas.
+      gaffers: 1,		// Number of Gaffer REST replicas.
 
       elasticsearch: {
           instances: 1
