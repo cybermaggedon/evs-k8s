@@ -88,6 +88,17 @@ local servicePorts = [
     k.svcPort.newNamed("rpc", 9000, 9000) + k.svcPort.protocol("TCP")
 ];
 
+local storageClasses = [
+    k.sc.new("hadoop")
+];
+
+local pvcs(hadoops) = [
+    k.pvc.new("hadoop-%04d" % id) +
+        k.pvc.storageClass("hadoop") +
+        k.pvc.size("5G")
+        for id in std.range(0, hadoops-1)
+];
+    
 // Function which returns resource definitions - deployments and services.
 local resources(config) = [
     
@@ -104,7 +115,7 @@ local resources(config) = [
             instance: "hadoop0000", app: "hadoop", component: "gaffer"
         })
     
-];
+] + storageClasses + pvcs(config.hadoops);
 
 // Return the function which creates resources.
 resources

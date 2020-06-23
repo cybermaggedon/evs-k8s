@@ -17,6 +17,49 @@
         }
     },
 
+    sc:: {
+        new(name):: {
+            apiVersion: "storage.k8s.io/v1",
+            kind: "StorageClass",
+            metadata: {
+                name: name
+            },
+            parameters: {
+                type: "pd-ssd"
+            },
+            provisioner: "kubernetes.io/gce-pd",
+            reclaimPolicy: "Retain"
+        }
+    },
+
+    pvc:: {
+        new(name):: {
+            apiVersion: "v1",
+            kind: "PersistentVolumeClaim",
+            metadata: {
+                name: name
+            },
+            spec: {
+                accessModes: ["ReadWriteOnce"],
+                volumeMode: "FileSystem"
+            }
+        },
+        storageClass(sc):: {
+            spec+: {
+                storageClassname: sc
+            }
+        },
+        size(s):: {
+            spec+: {
+                resources+: {
+                    requests: {
+                        storage: s
+                    }
+                }
+            }
+        }
+    },
+
     volume:: {
         new(n):: {
             name: n
