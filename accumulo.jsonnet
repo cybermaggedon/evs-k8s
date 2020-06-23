@@ -162,16 +162,16 @@ local resources(c) =
 [
 
     // Deployments for master, gc, tracer, monitor.
-    deployment("master", c.accumulo_slaves, c.zookeepers),
-    deployment("gc", c.accumulo_slaves, c.zookeepers),
-    deployment("tracer", c.accumulo_slaves, c.zookeepers),
-    deployment("monitor", c.accumulo_slaves, c.zookeepers),
+    deployment("master", c.gaffer.accumulo_slaves, c.gaffer.zookeepers),
+    deployment("gc", c.gaffer.accumulo_slaves, c.gaffer.zookeepers),
+    deployment("tracer", c.gaffer.accumulo_slaves, c.gaffer.zookeepers),
+    deployment("monitor", c.gaffer.accumulo_slaves, c.gaffer.zookeepers),
 
 ] + [
 
     // One deployment for each slave
-    slaveDeployment(id, c.accumulo_slaves, c.zookeepers)
-    for id in std.range(0, c.accumulo_slaves-1)
+    slaveDeployment(id, c.gaffer.accumulo_slaves, c.gaffer.zookeepers)
+    for id in std.range(0, c.gaffer.accumulo_slaves-1)
     
 ] + [
 

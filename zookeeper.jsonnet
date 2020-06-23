@@ -89,8 +89,8 @@ local pvcs(zks) = [
 local resources(config) = [
 
     // One deployment for each Zookeeper
-    deployment(id, zookeeperList(config.zookeepers))
-    for id in std.range(0, config.zookeepers-1)
+    deployment(id, zookeeperList(config.gaffer.zookeepers))
+    for id in std.range(0, config.gaffer.zookeepers-1)
 
 ] + [
 
@@ -102,7 +102,7 @@ local resources(config) = [
         k.svc.ports(servicePorts) +
         k.svc.clusterIp("None")
     
-] + storageClasses + pvcs(config.zookeepers);
+] + storageClasses + pvcs(config.gaffer.zookeepers);
 
 // Return the function which creates resources.
 resources

@@ -102,7 +102,8 @@ local pvcs(hadoops) = [
 local resources(config) = [
     
     // One deployment per Hadoop node.
-    deployment(id, config.hadoop_replication) for id in std.range(0, config.hadoops-1)
+    deployment(id, config.gaffer.hadoop_replication)
+    for id in std.range(0, config.gaffer.hadoops-1)
 				
 ] + [
 
@@ -114,7 +115,7 @@ local resources(config) = [
             instance: "hadoop0000", app: "hadoop", component: "gaffer"
         })
     
-] + storageClasses + pvcs(config.hadoops);
+] + storageClasses + pvcs(config.gaffer.hadoops);
 
 // Return the function which creates resources.
 resources

@@ -61,7 +61,7 @@ local servicePorts = [
 local resources(c) = [
 
     // One deployment, with a set of replicas.
-    deployment(c.gaffers, c.zookeepers)
+    deployment(c.gaffer.gaffers, c.gaffer.zookeepers)
 
 ] + [
 
