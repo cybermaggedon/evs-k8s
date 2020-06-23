@@ -45,12 +45,12 @@
             },
             spec: {
                 accessModes: ["ReadWriteOnce"],
-                volumeMode: "FileSystem"
+                volumeMode: "Filesystem"
             }
         },
         storageClass(sc):: {
             spec+: {
-                storageClassname: sc
+                storageClassName: sc
             }
         },
         size(s):: {

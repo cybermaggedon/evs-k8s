@@ -69,11 +69,11 @@ local envs(slaves, zks, id, proc) = [
     k.env.new("NAMENODE_URI", "hdfs://hadoop0000:9000/"),
 
     // Sizing parameters.
-    k.env.new("MEMORY_MAPS_MAX", "50M"),
-    k.env.new("CACHE_DATA_SIZE", "5M"),
-    k.env.new("CACHE_INDEX_SIZE", "10M"),
-    k.env.new("SORT_BUFFER_SIZE", "10M"),
-    k.env.new("WALOG_MAX_SIZE", "50M")
+    k.env.new("MEMORY_MAPS_MAX", "300M"),
+    k.env.new("CACHE_DATA_SIZE", "30M"),
+    k.env.new("CACHE_INDEX_SIZE", "40M"),
+    k.env.new("SORT_BUFFER_SIZE", "50M"),
+    k.env.new("WALOG_MAX_SIZE", "512M")
 
 ];
 
@@ -84,24 +84,24 @@ local containers(proc, slaves, xks) = [
 	k.container.command(["/start-process", proc]) +
 	k.container.env(envs(slaves, xks, -1, proc)) +
 	k.container.limits({
-	    memory: "128M", cpu: "0.5"
+	    memory: "512M", cpu: "0.5"
 	}) +
 	k.container.requests({
-	    memory: "128M", cpu: "0.1"
+	    memory: "512M", cpu: "0.05"
 	})
 ];
 
 // Container definition for slave containers.
 local slaveContainers(id, slaves, xks) = [
-    k.container.new("accumulo", "cybermaggedon/accumulo-gaffer:1.1.2") +
+    k.container.new("accumulo", "cybermaggedon/accumulo-gaffer:1.12.0b") +
         k.container.ports(ports()) +
 	k.container.command(["/start-process", "tserver"]) +
 	k.container.env(envs(slaves, xks, id, "tserver")) +
 	k.container.limits({
-	    memory: "128M", cpu: "0.5"
+	    memory: "1G", cpu: "1.0"
 	}) +
 	k.container.requests({
-	    memory: "128M", cpu: "0.2"
+	    memory: "1G", cpu: "0.1"
 	})
 ];
 

@@ -35,7 +35,7 @@ local containers(id, zks) = [
 	    memory: "256M", cpu: "0.5"
 	}) +
 	k.container.requests({
-	    memory: "256M", cpu: "0.15"
+	    memory: "256M", cpu: "0.05"
 	})
 ];
 

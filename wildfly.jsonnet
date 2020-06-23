@@ -30,10 +30,10 @@ local containers(zookeepers) = [
         k.container.ports(ports()) +
         k.container.env(envs(zookeepers)) +
 	k.container.limits({
-	    memory: "0.25G", cpu: "1.5"
+	    memory: "1G", cpu: "1.5"
 	}) +
 	k.container.requests({
-	    memory: "0.25G", cpu: "0.2"
+	    memory: "1G", cpu: "0.1"
 	})
 ];
 

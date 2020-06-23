@@ -48,10 +48,10 @@ local containers(id, replication) = [
         k.container.volumeMounts(volumeMounts(id)) +
 	k.container.env(envs(id, replication)) +
 	k.container.limits({
-	    memory: "256M", cpu: "1.0"
+	    memory: "1G", cpu: "1.0"
 	}) +
 	k.container.requests({
-	    memory: "256M", cpu: "0.2"
+	    memory: "1G", cpu: "0.1"
 	})
 ];
 
