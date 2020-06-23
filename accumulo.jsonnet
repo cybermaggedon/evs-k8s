@@ -180,7 +180,7 @@ local resources(c) =
         k.svc.ports(servicePorts) +
 	k.svc.labels({app: "accumulo", component: "gaffer"}) +
 	k.svc.clusterIp("None") +
-        k.svc.selector({app: "accumulo-master"})
+        k.svc.selector({instance: "accumulo-master", app: "accumulo"})
     
 ];
 // Return the function which creates resources.
