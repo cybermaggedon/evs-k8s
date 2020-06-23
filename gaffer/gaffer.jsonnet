@@ -5,7 +5,7 @@
 //
 
 // Import KSonnet library.
-local k = import "defs/defs.libsonnet";
+local k = import "defs.libsonnet";
 
 // Ports used by deployments
 local ports() = [
