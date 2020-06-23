@@ -18,12 +18,12 @@ local config = {
 };
 
 // Compile the resource list.
-local resources =
+local resources(config) =
     hadoop(config) +     // Hadoop.
     zookeeper(config) +		      // Zookeeper.
     accumulo(config) +   // Accumulo.
     wildfly(config);	      // Wildfly / REST API.
 
 // Output the resources.
-k.list.new(resources)
+resources
 
