@@ -7,7 +7,9 @@ local config = import "config.jsonnet";
 local imports = std.flattenArrays([
     import "gaffer/resources.jsonnet",
     import "elasticsearch.jsonnet",
-    import "kibana.jsonnet"
+    import "kibana.jsonnet",
+    import "cassandra.jsonnet",
+    import "pulsar.jsonnet"
 ]);
 
 // Compile the resource list.

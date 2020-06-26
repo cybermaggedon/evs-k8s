@@ -15,6 +15,14 @@
 
     kibana: {
         instances: 1
-    }
+    },
+
+    cassandra: {
+        instances: 1
+    },
+
+    pulsar: {
+        instances: 1
+    },
 
 }
