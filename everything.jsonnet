@@ -5,8 +5,7 @@ local config = import "config.jsonnet";
 
 // Import definitions for Gaffer stack
 local imports = std.flattenArrays([
-//    import "gaffer/resources.jsonnet"
-    //,
+    import "gaffer/resources.jsonnet",
     import "elasticsearch.jsonnet",
     import "kibana.jsonnet"
 ]);

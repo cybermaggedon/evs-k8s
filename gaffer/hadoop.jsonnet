@@ -8,115 +8,123 @@
 // Import KSonnet library.
 local k = import "defs.libsonnet";
 
-// Ports used by deployments
-local ports() = [
-    k.containerPort.newNamed("namenode-http", 50070),
-    k.containerPort.newNamed("datanode", 50075),
-    k.containerPort.newNamed("namenode-rpc", 9000)
-];
+local hadoop(config) = {
 
-// Volume mount points
-local volumeMounts(id) = [
-    k.mount.new("data", "/data")
-];
+    // Ports used by deployments
+    local ports = [
+        k.containerPort.newNamed("namenode-http", 50070),
+        k.containerPort.newNamed("datanode", 50075),
+        k.containerPort.newNamed("namenode-rpc", 9000)
+    ],
 
-// Environment variables
-local envs(id, replication) = [
+    // Volume mount points
+    local volumeMounts = [
+        k.mount.new("data", "/data")
+    ],
 
-    // Set Hadoop data replication to 3.
-    k.env.new("DFS_REPLICATION", std.toString(replication))
+    local replication = config.gaffer.hadoop_replication,
 
-] + if id == 0 then
-[
+    // Environment variables
+    local envs(id) = [
 
-    // The first node runs namenode and secondarynamenode
-    k.env.new("DAEMONS", "namenode,secondarynamenode,datanode"),
+        // Set Hadoop data replication to 3.
+        k.env.new("DFS_REPLICATION", std.toString(replication))
 
-] else [
+    ] + if id == 0 then
+    [
 
-    // Everything else just runs a datanode, and needs to know the
-    // namenode's URI.
-    k.env.new("DAEMONS", "datanode"),
-    k.env.new("NAMENODE_URI", "hdfs://hadoop0000:9000")
-    
-];
+        // The first node runs namenode and secondarynamenode
+        k.env.new("DAEMONS", "namenode,secondarynamenode,datanode"),
 
-// Container definition.
-local containers(id, replication) = [
-    k.container.new("hadoop", "cybermaggedon/hadoop:2.10.0") +
-        k.container.ports(ports()) +
-        k.container.volumeMounts(volumeMounts(id)) +
-	k.container.env(envs(id, replication)) +
-	k.container.limits({
-	    memory: "1G", cpu: "1.0"
-	}) +
-	k.container.requests({
-	    memory: "1G", cpu: "0.1"
-	})
-];
+    ] else [
 
-// Volumes - this invokes a pvc
-local volumes(id) = [
-    k.volume.new("data") +
-        k.volume.pvc("hadoop-%04d" % id)
-];
+        // Everything else just runs a datanode, and needs to know the
+        // namenode's URI.
+        k.env.new("DAEMONS", "datanode"),
+        k.env.new("NAMENODE_URI", "hdfs://hadoop0000:9000")
 
-// Deployment definition.  id is the node ID.
-local deployment(id, replication) = 
-    k.deployment.new("hadoop%04d" % id) +
-        k.deployment.labels({
-            instance: "hadoop%04d" % id,
-            app: "hadoop",
-            component: "gaffer"
-        }) +
-        k.deployment.containerLabels({
-            instance: "hadoop%04d" % id,
-            app: "hadoop",
-            component: "gaffer"
-        }) +
-        k.deployment.selector({
-            instance: "hadoop%04d" % id,
-            app: "hadoop",
-            component: "gaffer"
-        }) +
-        k.deployment.containers(containers(id, replication)) +
-        k.deployment.volumes(volumes(id));
+    ],
 
-// Ports declared on the service.
-local servicePorts = [
-    k.svcPort.newNamed("rpc", 9000, 9000) + k.svcPort.protocol("TCP")
-];
+    // Container definition.
+    local containers(id, replication) = [
+        k.container.new("hadoop", "cybermaggedon/hadoop:2.10.0") +
+            k.container.ports(ports) +
+            k.container.volumeMounts(volumeMounts) +
+            k.container.env(envs(id)) +
+            k.container.limits({
+                memory: "1G", cpu: "1.0"
+            }) +
+            k.container.requests({
+                memory: "1G", cpu: "0.1"
+            })
+    ],
 
-local storageClasses = [
-    k.sc.new("hadoop")
-];
+    // Volumes - this invokes a pvc
+    local volumes(id) = [
+        k.volume.new("data") +
+            k.volume.pvc("hadoop-%04d" % id)
+    ],
 
-local pvcs(hadoops) = [
-    k.pvc.new("hadoop-%04d" % id) +
-        k.pvc.storageClass("hadoop") +
-        k.pvc.size("5G")
-        for id in std.range(0, hadoops-1)
-];
-    
-// Function which returns resource definitions - deployments and services.
-local resources(config) = [
-    
-    // One deployment per Hadoop node.
-    deployment(id, config.gaffer.hadoop_replication)
-    for id in std.range(0, config.gaffer.hadoops-1)
-				
-] + [
+    // Deployment definition.  id is the node ID.
+    local deployment(id, replication) = 
+        k.deployment.new("hadoop%04d" % id) +
+            k.deployment.labels({
+                instance: "hadoop%04d" % id,
+                app: "hadoop",
+                component: "gaffer"
+            }) +
+            k.deployment.containerLabels({
+                instance: "hadoop%04d" % id,
+                app: "hadoop",
+                component: "gaffer"
+            }) +
+            k.deployment.selector({
+                instance: "hadoop%04d" % id,
+                app: "hadoop",
+                component: "gaffer"
+            }) +
+            k.deployment.containers(containers(id, replication)) +
+            k.deployment.volumes(volumes(id)),
 
-    // One service for the first node (name node).
-    k.svc.new("hadoop0000") +
-        k.svc.labels({app: "hadoop", component: "gaffer"}) +
-        k.svc.ports(servicePorts) +
-	k.svc.selector({
-            instance: "hadoop0000", app: "hadoop", component: "gaffer"
-        })
-    
-] + storageClasses + pvcs(config.gaffer.hadoops);
+    // Ports declared on the service.
+    local servicePorts = [
+        k.svcPort.newNamed("rpc", 9000, 9000) + k.svcPort.protocol("TCP")
+    ],
+
+    local storageClasses = [
+        k.sc.new("hadoop")
+    ],
+
+    local pvcs(hadoops) = [
+        k.pvc.new("hadoop-%04d" % id) +
+            k.pvc.storageClass("hadoop") +
+            k.pvc.size("5G")
+            for id in std.range(0, hadoops-1)
+    ],
+
+    // Function which returns resource definitions - deployments and services.
+    resources:: [
+
+        // One deployment per Hadoop node.
+        deployment(id, config.gaffer.hadoop_replication)
+        for id in std.range(0, config.gaffer.hadoops-1)
+
+    ] + [
+
+        // One service for the first node (name node).
+        k.svc.new("hadoop0000") +
+            k.svc.labels({app: "hadoop", component: "gaffer"}) +
+            k.svc.ports(servicePorts) +
+            k.svc.selector({
+                instance: "hadoop0000", app: "hadoop", component: "gaffer"
+            })
+
+    ] + storageClasses + pvcs(config.gaffer.hadoops)
+
+};
 
 // Return the function which creates resources.
-resources
+[hadoop]
+
+
 

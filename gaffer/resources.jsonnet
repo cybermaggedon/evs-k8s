@@ -8,22 +8,20 @@ local zookeeper = import "zookeeper.jsonnet";
 local accumulo = import "accumulo.jsonnet";
 local gaffer = import "gaffer.jsonnet";
 
-// Configuration values for sizing the cluster.
-local config = {
-      hadoops: 1,		// Number of Hadoop nodes.
-      hadoop_replication: 1,	// Data replication level on HDFS.
-      zookeepers: 1,		// Number of Zookeepers.
-      accumulo_slaves: 1,	// Number of Accumulo slaves.
-      gaffers: 1		// Number of Wildfly replicas.
-};
+local risk_graph_schema = importstr "riskgraph-schema.json";
+local risk_graph = gaffer("risk", "riskgraph", risk_graph_schema);
+
+local threat_graph_schema = importstr "threatgraph-schema.json";
+local threat_graph = gaffer("threat", "threatgraph", threat_graph_schema);
 
 // Compile the resource list.
-local resources(config) =
-    hadoop(config) +     // Hadoop.
-    zookeeper(config) +		      // Zookeeper.
-    accumulo(config) +   // Accumulo.
-    gaffer(config);	      // Wildfly / REST API.
+local resources(config) = [
+//    hadoop(config) +     // Hadoop.
+//    zookeeper(config) +		      // Zookeeper.
+//    accumulo(config) +   // Accumulo.
+    risk_graph(config)];	      // Wildfly / REST API.
 
 // Output the resources.
-resources
+//risk_graph
+hadoop + zookeeper + accumulo + risk_graph + threat_graph
 

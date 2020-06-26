@@ -7,71 +7,101 @@
 // Import KSonnet library.
 local k = import "defs.libsonnet";
 
-// Ports used by deployments
-local ports() = [
-    k.containerPort.newNamed("rest", 8080)
-];
+local g(config, id, table, schema) = {
 
-// Constructs a list of Zookeeper hostnames, comma separated.
-local zookeeperList(count) =
-    std.join(",", std.makeArray(count, function(x) "zk%d.zk" % (x + 1)));
+        id:: "gaffer-" + id,
+        images:: ["cybermaggedon/wildfly-gaffer:1.12.0b"],
 
-// Environment variables
-local envs(zookeepers) = [
+        // Ports used by deployments
+        local ports = [
+            k.containerPort.newNamed("rest", 8080)
+        ],
 
-    // List of Zookeepers.
-    k.env.new("ZOOKEEPERS", zookeeperList(zookeepers))
-    
-];
+        // Constructs a list of Zookeeper hostnames, comma separated.
+        local zookeeperList =
+            std.join(",", std.makeArray(config.gaffer.zookeepers,
+                          function(x) "zk%d.zk" % (x + 1))),
 
-// Container definition.
-local containers(zookeepers) = [
-    k.container.new("wildfly", "cybermaggedon/wildfly-gaffer:1.12.0b") +
-        k.container.ports(ports()) +
-        k.container.env(envs(zookeepers)) +
-	k.container.limits({
-	    memory: "1G", cpu: "1.5"
-	}) +
-	k.container.requests({
-	    memory: "1G", cpu: "0.1"
-	})
-];
+        // Environment variables
+        local envs = [
 
-// Deployment definition.  id is the node ID.
-local deployment(gaffers, zookeepers) =
-      k.deployment.new("wildfly") +
-      k.deployment.replicas(gaffers) +
-      k.deployment.labels({
-          instance: "wildfly", app: "wildfly", component: "gaffer"
-      }) +
-      k.deployment.containerLabels({
-          instance: "wildfly", app: "wildfly", component: "gaffer"
-      }) +
-      k.deployment.selector({
-          instance: "wildfly", app: "wildfly", component: "gaffer"
-      }) +
-      k.deployment.containers(containers(zookeepers));
+            // List of Zookeepers.
+            k.env.new("ZOOKEEPERS", zookeeperList)
 
-// Ports declared on the service.
-local servicePorts = [
-    k.svcPort.newNamed("rest", 8080, 8080) + k.svcPort.protocol("TCP")
-];
+        ],
 
-// Function which returns resource definitions - deployments and services.
-local resources(c) = [
+        local volumeMounts = [
+            k.mount.new("schema", "/usr/local/wildfly/schema") +
+                k.mount.readOnly(true)
+        ],
 
-    // One deployment, with a set of replicas.
-    deployment(c.gaffer.gaffers, c.gaffer.zookeepers)
+        local configMaps = [
+            k.configMap.new(id + "-schema") +
+                k.configMap.data({"schema.json": schema})
+        ],
 
-] + [
+        // Volumes - this invokes a secret containing the web cert/key
+        local volumes = [
+            k.volume.new("schema") + 
+                k.volume.fromConfigMap(id + "-schema")
+        ],
 
-    // One service load-balanced across the replicas
-    k.svc.new("gaffer") + k.svc.labels({app: "wildfly", component: "gaffer"}) +
-        k.svc.ports(servicePorts) +
-        k.svc.selector({app: "wildfly", component: "gaffer"})
+        // Container definition.
+        local containers = [
+            k.container.new("gaffer", "cybermaggedon/wildfly-gaffer:1.12.0b") +
+                k.container.ports(ports) +
+                k.container.volumeMounts(volumeMounts) +
+                k.container.env(envs) +
+                k.container.limits({
+                    memory: "1G", cpu: "1.5"
+                }) +
+                k.container.requests({
+                    memory: "1G", cpu: "0.1"
+                })
+        ],
 
-];
+        local gaffers = config.gaffer.gaffers,
+        local zookeepers = config.gaffer.zookeepers,
+
+        // Deployment definition.  id is the node ID.
+        local deployments = [
+            local instance = "gaffer-" + id;
+            k.deployment.new("gaffer-" + id) +
+                k.deployment.replicas(gaffers) +
+                k.deployment.labels({
+                    instance: instance, app: "gaffer", component: "gaffer"
+                }) +
+                k.deployment.containerLabels({
+                    instance: instance, app: "gaffer", component: "gaffer"
+                }) +
+                k.deployment.selector({
+                    instance: instance, app: "gaffer", component: "gaffer"
+                }) +
+                k.deployment.containers(containers) + 
+                k.deployment.volumes(volumes)
+      ],
+
+        // Ports declared on the service.
+        local servicePorts = [
+            k.svcPort.newNamed("rest", 8080, 8080) + k.svcPort.protocol("TCP")
+        ],
+
+        local services = [
+            // One service load-balanced across the replicas
+            k.svc.new("gaffer") +
+                k.svc.labels({app: "wildfly", component: "gaffer"}) +
+                k.svc.ports(servicePorts) +
+                k.svc.selector({app: "wildfly", component: "gaffer"})
+        ],
+
+        // Function which returns resource definitions
+        resources:: deployments + services + configMaps
+
+    };
+
+local gaffer(id, table, schema) =
+    local h(config) = g(config, id, table, schema); [h];
 
 // Return the function which creates resources.
-resources
+gaffer
 

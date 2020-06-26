@@ -18,6 +18,9 @@
             name: vol,
             mountPath: mpt,
             readOnly: false
+        },
+        readOnly(v):: {
+            readOnly: v
         }
     },
 
@@ -64,6 +67,19 @@
         }
     },
 
+    configMap:: {
+        new(name):  {
+            apiVersion: "v1",
+            kind: "ConfigMap",
+            metadata+: {
+                name: name
+            }
+        },
+        data(m): {
+            data+: m
+        }
+    },
+
     volume:: {
         new(n):: {
             name: n
@@ -72,7 +88,16 @@
             persistentVolumeClaim: {
                 claimName: n
             }
+        },
+        fromConfigMap(cm):: {
+            configMap: {
+                name: cm
+            }
         }
+/*            k.volume.fromConfigMap(id + "-schema", id + "-schema", [{
+                key: "example-schema.json",
+                path: "example-schema.json",
+            }])*/
     },
 
     gceDisk:: {
