@@ -25,4 +25,8 @@
         instances: 1
     },
 
+    cybermon: {
+        instances: 1
+    }
+    
 }

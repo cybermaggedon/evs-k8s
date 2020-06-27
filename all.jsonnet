@@ -9,7 +9,8 @@ local imports = std.flattenArrays([
     import "elasticsearch.jsonnet",
     import "kibana.jsonnet",
     import "cassandra.jsonnet",
-    import "pulsar.jsonnet"
+    import "pulsar.jsonnet",
+    import "cybermon.jsonnet"
 ]);
 
 // Compile the resource list.
