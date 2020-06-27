@@ -157,19 +157,21 @@
             labels:: local cmp = self.component; {
                 instance: name, app: name, component: cmp
             },
+            command:: {},
             limits:: {},
             ports:: [],
             requests:: {},
             replicas:: 1,
             containers:: [
-               $.container.new(self.name, self.image) +
-                   $.container.ports([
-                       $.containerPort.newNamed(p.name, p.port)
-                       for p in self.ports
-                   ]) +
-                   $.container.env(self.envs) +
-                   self.limits + self.requests
-            ],
+                $.container.new(self.name, self.image) +
+                    self.command +
+                    $.container.ports([
+                        $.containerPort.newNamed(p.name, p.port)
+                        for p in self.ports
+                    ]) +
+                    $.container.env(self.envs) +
+                    self.limits + self.requests
+                ],
             deployments:: [
                 $.deployment.new(self.name) +
                     $.deployment.replicas(self.replicas) +
@@ -202,8 +204,8 @@
         image(name):: {
             image:: name
         },
-        command(name):: {
-            command:: name
+        command(c):: {
+            command:: $.container.command(c)
         },
         ports(ports):: {
             ports:: ports
