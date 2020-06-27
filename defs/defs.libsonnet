@@ -190,7 +190,7 @@
                     ]) +
                     $.svc.selector(self.labels)
             ],
-            resources:: self.deployments + self.services
+            resources: self.deployments + self.services
         },
         component(name):: {
             component:: name
