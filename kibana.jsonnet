@@ -12,7 +12,8 @@ local kibana(config) = {
     // Environment variables
     local envs = [
 
-        k.env.new("ELASTICSEARCH_URL", "http://elasticsearch:9200/")
+        k.env.new("ELASTICSEARCH_URL", "http://elasticsearch:9200/"),
+        k.env.new("NODE_OPTIONS", "--max_old_space_size=300")
 
     ],
 

@@ -17,16 +17,18 @@ local elasticsearch(config) = {
     // Environment variables
     local envs(id) = [
 
-        k.env.new("discover.type", "single-node"),
+        k.env.new("discovery.type", "single-node"),
 
         // Memory usage low
-        k.env.new("JVM_OPTS", "-Xms128M -Xmx256M")
+        k.env.new("ES_JAVA_OPTS", "-Xms128M -Xmx256M")
 
     ],
 
     // Container definition.
     local containers(id) = [
         k.container.new("elasticsearch", "elasticsearch:7.7.1") +
+            k.container.command(["bash", "-c",
+            "sysctl -w vm.max_map_count=262144; chown -R elasticsearch:elasticsearch /usr/share/elasticsearch/data; /usr/local/bin/docker-entrypoint.sh"]) +
             k.container.ports(ports()) +
             k.container.volumeMounts(volumeMounts(id)) +
             k.container.env(envs(id)) +

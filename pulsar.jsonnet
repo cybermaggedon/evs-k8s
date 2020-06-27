@@ -17,7 +17,7 @@ local pulsar(config) = {
 
     // Environment variables
     local envs = [
-        k.env.new("JVM_OPTS", "-Xms64M -Xmx200M")
+        k.env.new("PULSAR_MEM", "-Xms128M -Xmx300M")
     ],
 
     // Container definition.
