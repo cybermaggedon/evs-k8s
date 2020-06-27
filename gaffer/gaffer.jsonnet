@@ -26,7 +26,10 @@ local g(config, id, table, schema) = {
         local envs = [
 
             // List of Zookeepers.
-            k.env.new("ZOOKEEPERS", zookeeperList)
+            k.env.new("ZOOKEEPERS", zookeeperList),
+
+  	    // Accumulo table name
+	    k.env.new("ACCUMULO_TABLE", table)
 
         ],
 
