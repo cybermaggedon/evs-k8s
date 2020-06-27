@@ -146,6 +146,79 @@
             name: name
         }
     
+    },
+
+    simple:: {
+        new(name):: {
+            name: name,
+            component:: name,
+            image:: "image-not-specified",
+            envs:: [],
+            labels:: local cmp = self.component; {
+                instance: name, app: name, component: cmp
+            },
+            limits:: {},
+            ports:: [],
+            requests:: {},
+            replicas:: 1,
+            containers:: [
+               $.container.new(self.name, self.image) +
+                   $.container.ports([
+                       $.containerPort.newNamed(p.name, p.port)
+                       for p in self.ports
+                   ]) +
+                   $.container.env(self.envs) +
+                   self.limits + self.requests
+            ],
+            deployments:: [
+                $.deployment.new(self.name) +
+                    $.deployment.replicas(self.replicas) +
+                    $.deployment.labels(self.labels) +
+                    $.deployment.containerLabels(self.labels) +
+                    $.deployment.selector(self.labels) +
+                    $.deployment.containers(self.containers)
+            ],
+            services::
+                local n = self.name; local c = self.component;
+                [
+                    $.svc.new(self.name) +
+                    $.svc.labels({app: n, component: c}) +
+                    $.svc.ports([
+                        $.svcPort.newNamed(p.name, p.port, p.port) +
+                            $.svcPort.protocol(p.protocol)
+                        for p in self.ports
+                    ]) +
+                    $.svc.selector(self.labels)
+            ],
+            resources:: self.deployments + self.services
+        },
+        component(name):: {
+            component:: name
+        },
+        replicas(r):: {
+            replicas:: r
+        },
+        image(name):: {
+            image:: name
+        },
+        command(name):: {
+            command:: name
+        },
+        ports(ports):: {
+            ports:: ports
+        },
+        envs(envs):: {
+            envs:: [
+                $.env.new(e.name, e.value)
+                for e in envs
+            ]
+        },
+        limits(l):: {
+            limits:: $.container.limits(l)
+        },
+        requests(r):: {
+            requests: $.container.requests(r)
+        },
     }
 
 }
