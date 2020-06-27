@@ -180,6 +180,7 @@
             ],
             services::
                 local n = self.name; local c = self.component;
+                if self.ports != [] then
                 [
                     $.svc.new(self.name) +
                     $.svc.labels({app: n, component: c}) +
@@ -189,7 +190,7 @@
                         for p in self.ports
                     ]) +
                     $.svc.selector(self.labels)
-            ],
+                ] else [],
             resources: self.deployments + self.services
         },
         component(name):: {

@@ -29,11 +29,12 @@ local analytic(config, name, version, replicas) =
 
 
 local all(config) = {
-    resources:: [
-       analytic(config, a.n, a.v, 1)
+    resources:: std.flattenArrays([
+       analytic(config, a.n, a.v, 1).resources
        for a in analytics
-    ]
+    ])
 };
 
-[all]
+[ all
+]
 

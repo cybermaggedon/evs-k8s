@@ -24,7 +24,7 @@ local zookeeper(config) = {
     // Environment variables
     local envs(id) = [
         k.env.new("ZOOKEEPER_MYID", "%d" % (id + 1)),
-        k.env.new("ZOOKEEPERS", config.gaffer.zookeepers)
+        k.env.new("ZOOKEEPERS", "%d" % config.gaffer.zookeepers)
     ],
 
     // Container definition.
@@ -115,4 +115,5 @@ local zookeeper(config) = {
 
 // Return the function which creates resources.
 [zookeeper]
+
 
