@@ -3,15 +3,16 @@
 local k = import "defs.libsonnet";
 
 local analytics = [
-  {n: "evs-geoip", v: "0.2.0"},
-  {n: "evs-detector", v: "0.2.1"},
-  {n: "evs-elasticsearch", v: "0.2.0"},
-  {n: "evs-threatgraph", v: "0.2.0"},
-  {n: "evs-riskgraph", v: "0.2.1"},
-  {n: "evs-cassandra", v: "0.2.0"}
+  {n: "evs-geoip", v: "0.2.0", e: []},
+  {n: "evs-detector", v: "0.2.1", e: []},
+  {n: "evs-elasticsearch", v: "0.2.0",
+      e: [["ELASTICSEARCH_URL", "http://elasticsearch:9200"]]},
+  {n: "evs-threatgraph", v: "0.2.0", e: []},
+  {n: "evs-riskgraph", v: "0.2.1", e: []},
+  {n: "evs-cassandra", v: "0.2.0", e: []}
 ];
 
-local analytic(config, name, version, replicas) =
+local analytic(config, name, version, replicas, env) =
     local image = "docker.io/cybermaggedon/" + name + ":" + version;
     k.simple.new(name) +
         k.simple.image(image) +
@@ -19,7 +20,8 @@ local analytic(config, name, version, replicas) =
         k.simple.replicas(replicas) +
         k.simple.envs([
             {name: "PULSAR_BROKER", value: "pulsar://exchange:6650"}
-        ]) +
+        ] + if env != null then [{name: e[0], value: e[1]} for e in env] else []
+        ) +
         k.simple.limits({
             memory: "128M", cpu: "1.0"
         }) +
@@ -30,7 +32,7 @@ local analytic(config, name, version, replicas) =
 
 local all(config) = {
     resources:: std.flattenArrays([
-       analytic(config, a.n, a.v, 1).resources
+       analytic(config, a.n, a.v, 1, a.e).resources
        for a in analytics
     ])
 };
