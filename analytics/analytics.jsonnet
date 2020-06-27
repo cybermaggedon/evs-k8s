@@ -3,13 +3,24 @@
 local k = import "defs.libsonnet";
 
 local analytics = [
-  {n: "evs-geoip", v: "0.2.0", e: []},
-  {n: "evs-detector", v: "0.2.1", e: []},
-  {n: "evs-elasticsearch", v: "0.2.0",
-      e: [["ELASTICSEARCH_URL", "http://elasticsearch:9200"]]},
-  {n: "evs-threatgraph", v: "0.2.0", e: []},
-  {n: "evs-riskgraph", v: "0.2.1", e: []},
-  {n: "evs-cassandra", v: "0.2.0", e: []}
+  {n: "evs-geoip", v: "0.2.0", e: [
+      ["OUTPUT", "geo"]
+  ]},
+  {n: "evs-detector", v: "0.2.1", e: [
+      ["OUTPUT", "ioc"]
+  ]},
+  {n: "evs-elasticsearch", v: "0.2.0", e: [
+      ["ELASTICSEARCH_URL", "http://elasticsearch:9200"]
+  ]},
+  {n: "evs-threatgraph", v: "0.2.0", e: [
+      ["GAFFER_URL", "http://threat-graph:8080/rest/v2"]
+  ]},
+  {n: "evs-riskgraph", v: "0.2.1", e: [
+      ["GAFFER_URL", "http://risk-graph:8080/rest/v2"]
+  ]},
+  {n: "evs-cassandra", v: "0.2.0", e: [
+      ["CASSANDRA_CLUSTER", "cassandra"]
+  ]}
 ];
 
 local analytic(config, name, version, replicas, env) =
