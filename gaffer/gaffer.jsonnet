@@ -65,17 +65,17 @@ local g(config, id, table, schema) = {
 
         // Deployment definition.  id is the node ID.
         local deployments = [
-            local instance = "gaffer-" + id;
-            k.deployment.new("gaffer-" + id) +
+            local gaffer = "gaffer-" + id;
+            k.deployment.new(gaffer) +
                 k.deployment.replicas(gaffers) +
                 k.deployment.labels({
-                    instance: instance, app: "gaffer", component: "gaffer"
+                    instance: gaffer, app: gaffer, component: "gaffer"
                 }) +
                 k.deployment.containerLabels({
-                    instance: instance, app: "gaffer", component: "gaffer"
+                    instance: gaffer, app: gaffer, component: "gaffer"
                 }) +
                 k.deployment.selector({
-                    instance: instance, app: "gaffer", component: "gaffer"
+                    instance: gaffer, app: gaffer, component: "gaffer"
                 }) +
                 k.deployment.containers(containers) + 
                 k.deployment.volumes(volumes)
@@ -88,10 +88,10 @@ local g(config, id, table, schema) = {
 
         local services = [
             // One service load-balanced across the replicas
-            k.svc.new("gaffer") +
-                k.svc.labels({app: "wildfly", component: "gaffer"}) +
+            k.svc.new(id + "-graph") +
+                k.svc.labels({app: "gaffer-" + id, component: "gaffer"}) +
                 k.svc.ports(servicePorts) +
-                k.svc.selector({app: "wildfly", component: "gaffer"})
+                k.svc.selector({app: "gaffer-" + id, component: "gaffer"})
         ],
 
         // Function which returns resource definitions
