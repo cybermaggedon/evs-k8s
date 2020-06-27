@@ -92,24 +92,25 @@ local hadoop(config) = {
     ],
 
     local storageClasses = [
-        k.sc.new("hadoop")
+        k.storageClass.new("hadoop")
     ],
 
-    local pvcs(hadoops) = [
+    local pvcs = [
         k.pvc.new("hadoop-%04d" % id) +
             k.pvc.storageClass("hadoop") +
             k.pvc.size("5G")
-            for id in std.range(0, hadoops-1)
+            for id in std.range(0, config.gaffer.hadoops - 1)
     ],
 
-    // Function which returns resource definitions - deployments and services.
-    resources:: [
+    local deployments = [
 
         // One deployment per Hadoop node.
         deployment(id, config.gaffer.hadoop_replication)
         for id in std.range(0, config.gaffer.hadoops-1)
 
-    ] + [
+    ],
+
+    local services = [
 
         // One service for the first node (name node).
         k.svc.new("hadoop0000") +
@@ -119,7 +120,10 @@ local hadoop(config) = {
                 instance: "hadoop0000", app: "hadoop", component: "gaffer"
             })
 
-    ] + storageClasses + pvcs(config.gaffer.hadoops)
+    ],
+
+    // Function which returns resource definitions - deployments and services.
+    resources:: deployments + services + storageClasses + pvcs
 
 };
 

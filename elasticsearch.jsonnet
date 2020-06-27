@@ -68,22 +68,23 @@ local elasticsearch(config) = {
     ],
 
     local storageClasses = [
-        k.sc.new("elasticsearch")
+        k.storageClass.new("elasticsearch")
     ],
 
-    local pvcs(instances) = [
+    local pvcs = [
         k.pvc.new("elasticsearch-%04d" % id) +
             k.pvc.storageClass("elasticsearch") +
             k.pvc.size("10G")
-            for id in std.range(0, instances-1)
+            for id in std.range(0, config.elasticsearch.instances - 1)
     ],
 
-    // Function which returns resource definitions - deployments and services.
-    resources:: [
+    local deployments = [
 
         deployment(id) for id in std.range(0, config.elasticsearch.instances-1)
 
-    ] + [
+    ],
+
+    local services = [
 
         // One service for the first node (name node).
         k.svc.new("elasticsearch") +
@@ -93,7 +94,10 @@ local elasticsearch(config) = {
                 app: "elasticsearch", component: "elasticsearch"
             })
 
-    ] + storageClasses + pvcs(config.elasticsearch.instances)
+    ],
+
+    // Function which returns resource definitions - deployments and services.
+    resources:: deployments + services + storageClasses + pvcs
 
 };
 

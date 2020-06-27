@@ -1,4 +1,5 @@
 {
+
     deployment:: import "deployment.libsonnet",
 
     container:: import "container.libsonnet",
@@ -8,9 +9,7 @@
     },
 
     env:: {
-
         new(n, v):: { name: n, value: v }
-
     },
 
     mount:: {
@@ -24,7 +23,7 @@
         }
     },
 
-    sc:: {
+    storageClass:: {
         new(name):: {
             apiVersion: "storage.k8s.io/v1",
             kind: "StorageClass",

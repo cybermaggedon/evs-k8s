@@ -10,7 +10,7 @@ local k = import "defs.libsonnet";
 local zookeeper(config) = {
 
     // Ports used by deployments
-    local ports() = [
+    local ports = [
         k.containerPort.newNamed("internal1", 2888),
         k.containerPort.newNamed("internal2", 3888),
         k.containerPort.newNamed("service", 2181)
@@ -30,7 +30,7 @@ local zookeeper(config) = {
     // Container definition.
     local containers(id, zks) = [
         k.container.new("zookeeper", "cybermaggedon/zookeeper:3.6.1") +
-            k.container.ports(ports()) +
+            k.container.ports(ports) +
             k.container.volumeMounts(volumeMounts(id)) +
             k.container.env(envs(id)) +
             k.container.limits({
@@ -78,7 +78,7 @@ local zookeeper(config) = {
     ],
 
     local storageClasses = [
-        k.sc.new("zookeeper")
+        k.storageClass.new("zookeeper")
     ],
 
     local pvcs = [
@@ -88,14 +88,15 @@ local zookeeper(config) = {
             for id in std.range(0, config.gaffer.zookeepers-1)
     ],
 
-    // Function which returns resource definitions - deployments and services.
-    resources:: [
+    local deployments = [
 
         // One deployment for each Zookeeper
         deployment(id)
         for id in std.range(0, config.gaffer.zookeepers-1)
 
-    ] + [
+    ],
+
+    local services = [
 
         // One service for each Zookeeper to allow it to be discovered by
         // Zookeeper name.
@@ -105,7 +106,10 @@ local zookeeper(config) = {
             k.svc.ports(servicePorts) +
             k.svc.clusterIp("None")
 
-    ] + storageClasses + pvcs
+    ],
+    
+    // Function which returns resource definitions - deployments and services.
+    resources:: deployments + services + storageClasses + pvcs
 
 };
 

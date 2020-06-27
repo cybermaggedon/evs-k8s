@@ -68,31 +68,31 @@ local pulsar(config) = {
     ],
 
     local storageClasses = [
-        k.sc.new("pulsar")
+        k.storageClass.new("pulsar")
     ],
 
-    local pvcs(instances) = [
+    local pvcs = [
         k.pvc.new("pulsar-%04d" % id) +
             k.pvc.storageClass("pulsar") +
             k.pvc.size("10G")
-            for id in std.range(0, instances-1)
+            for id in std.range(0, config.pulsar.instances -  1)
     ],
 
-    // Function which returns resource definitions - deployments and services.
-    resources:: [
-
+    local deployments = [
         deployment(id) for id in std.range(0, config.pulsar.instances-1)
+    ],
 
-    ] + [
-
+    local services = [
         k.svc.new("exchange") +
             k.svc.labels({app: "pulsar", component: "pulsar"}) +
             k.svc.ports(servicePorts) +
             k.svc.selector({
                 app: "pulsar", component: "pulsar"
             })
+    ],
 
-    ] + storageClasses + pvcs(config.pulsar.instances)
+    // Function which returns resource definitions - deployments and services.
+    resources:: deployments + services + storageClasses + pvcs
 
 };
 

@@ -162,8 +162,7 @@ local accumulo(config) = {
         k.svcPort.newNamed("slave", 9997, 9997) + k.svcPort.protocol("TCP")
     ],
 
-    // Function which returns resource definitions - deployments and services.
-    resources:: [
+    local deployments = [
 
         // Deployments for master, gc, tracer, monitor.
         deployment("master"),
@@ -177,7 +176,9 @@ local accumulo(config) = {
         slaveDeployment(id)
         for id in std.range(0, slaves - 1)
 
-    ] + [
+    ],
+
+    local services = [
 
         // Services for the Accumulo master
         k.svc.new("accumulo") +
@@ -186,7 +187,10 @@ local accumulo(config) = {
             k.svc.clusterIp("None") +
             k.svc.selector({instance: "accumulo-master", app: "accumulo"})
 
-    ]
+    ],
+
+    // Function which returns resource definitions - deployments and services.
+    resources::  deployments + services
 
 };
 

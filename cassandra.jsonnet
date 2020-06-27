@@ -65,22 +65,23 @@ local cassandra(config) = {
     ],
 
     local storageClasses = [
-        k.sc.new("cassandra")
+        k.storageClass.new("cassandra")
     ],
 
-    local pvcs(instances) = [
+    local pvcs = [
         k.pvc.new("cassandra-%04d" % id) +
             k.pvc.storageClass("cassandra") +
             k.pvc.size("10G")
-            for id in std.range(0, instances-1)
+            for id in std.range(0, config.cassandra.instances - 1)
     ],
 
-    // Function which returns resource definitions - deployments and services.
-    resources:: [
+    local deployments = [
 
         deployment(id) for id in std.range(0, config.cassandra.instances-1)
 
-    ] + [
+    ],
+
+    local services = [
 
         // One service for the first node (name node).
         k.svc.new("cassandra") +
@@ -90,7 +91,10 @@ local cassandra(config) = {
                 app: "cassandra", component: "cassandra"
             })
 
-    ] + storageClasses + pvcs(config.cassandra.instances)
+    ],
+
+    // Function which returns resource definitions - deployments and services.
+    resources::  deployments + services + storageClasses + pvcs
 
 };
 

@@ -79,7 +79,7 @@ local g(config, id, table, schema) = {
                 }) +
                 k.deployment.containers(containers) + 
                 k.deployment.volumes(volumes)
-      ],
+        ],
 
         // Ports declared on the service.
         local servicePorts = [
