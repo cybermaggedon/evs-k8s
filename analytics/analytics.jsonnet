@@ -6,7 +6,7 @@ local analytics = [
   {n: "evs-geoip", v: "0.2.0"},
   {n: "evs-detector", v: "0.2.1"},
   {n: "evs-elasticsearch", v: "0.2.0"},
-  {n: "evs-threatgraph", v: "0.2.1"},
+  {n: "evs-threatgraph", v: "0.2.0"},
   {n: "evs-riskgraph", v: "0.2.1"},
   {n: "evs-cassandra", v: "0.2.0"}
 ];
@@ -21,10 +21,10 @@ local analytic(config, name, version, replicas) =
             {name: "PULSAR_BROKER", value: "pulsar://exchange:6650"}
         ]) +
         k.simple.limits({
-            memory: "256M", cpu: "1.0"
+            memory: "128M", cpu: "1.0"
         }) +
         k.simple.requests({
-            memory: "256M", cpu: "0.05"
+            memory: "128M", cpu: "0.05"
         });
 
 

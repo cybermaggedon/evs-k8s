@@ -17,6 +17,7 @@ local pulsar(config) = {
 
     // Environment variables
     local envs = [
+        k.env.new("JVM_OPTS", "-Xms64M -Xmx200M")
     ],
 
     // Container definition.
@@ -27,10 +28,10 @@ local pulsar(config) = {
             k.container.volumeMounts(volumeMounts(id)) +
             k.container.env(envs) +
             k.container.limits({
-                memory: "256M", cpu: "1.0"
+                memory: "700M", cpu: "1.0"
             }) +
             k.container.requests({
-                memory: "256M", cpu: "0.1"
+                memory: "700M", cpu: "0.1"
             })
     ],
 

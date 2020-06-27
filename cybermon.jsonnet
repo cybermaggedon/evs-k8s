@@ -3,7 +3,7 @@
 local k = import "defs.libsonnet";
 
 local cybermon(config) = 
-    k.simple.new("cyberprobe") +
+    k.simple.new("cybermon") +
       k.simple.image("docker.io/cybermaggedon/cyberprobe:2.5.1") +
       k.simple.command(["cybermon", "-p", "9000", "-c",
            "/etc/cyberprobe/pulsar.lua"]) +

@@ -17,7 +17,10 @@ local elasticsearch(config) = {
     // Environment variables
     local envs(id) = [
 
-        k.env.new("discover.type", "single-node")
+        k.env.new("discover.type", "single-node"),
+
+        // Memory usage low
+        k.env.new("JVM_OPTS", "-Xms128M -Xmx256M")
 
     ],
 
@@ -28,10 +31,10 @@ local elasticsearch(config) = {
             k.container.volumeMounts(volumeMounts(id)) +
             k.container.env(envs(id)) +
             k.container.limits({
-                memory: "1G", cpu: "1.0"
+                memory: "512M", cpu: "1.0"
             }) +
             k.container.requests({
-                memory: "1G", cpu: "0.1"
+                memory: "512M", cpu: "0.1"
             })
     ],
 

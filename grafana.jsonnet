@@ -4,7 +4,7 @@ local k = import "defs.libsonnet";
 
 local grafana(config) = 
     k.simple.new("grafana") +
-      k.simple.image("grafana:7.0.3") +
+      k.simple.image("grafana/grafana:7.0.3") +
       k.simple.ports([
           {name: "grafana", port: 3000, protocol: "TCP"}
       ]) +

@@ -4,7 +4,7 @@ local k = import "defs.libsonnet";
 
 local prometheus(config) = 
     k.simple.new("prometheus") +
-      k.simple.image("prometheus:v2.19.1") +
+      k.simple.image("prom/prometheus:v2.19.1") +
       k.simple.ports([
           {name: "prometheus", port: 9090, protocol: "TCP"}
       ]) +
