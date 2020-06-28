@@ -92,6 +92,11 @@
             configMap: {
                 name: cm
             }
+        },
+        fromSecret(s):: {
+            secret: {
+                secretName: s
+            }
         }
     },
 
