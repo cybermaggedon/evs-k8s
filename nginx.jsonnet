@@ -2,7 +2,10 @@
 // Import KSonnet library.
 local k = import "defs.libsonnet";
 
-local cfg = importstr "nginx.conf";
+local tmpl = importstr "nginx.conf";
+local amend(str, config) =
+    str % [config.auth_host, config.portal_host, config.auth_host,
+        config.auth_host];
 
 local nginx(config) = {
 
@@ -38,7 +41,7 @@ local nginx(config) = {
 
     local configMaps = [
         k.configMap.new("nginx-config") +
-            k.configMap.data({"default.conf": cfg})
+            k.configMap.data({"default.conf": amend(tmpl, config)})
     ],
 
     // Volumes - this invokes a pvc
@@ -89,7 +92,7 @@ local nginx(config) = {
             k.svc.selector({
                 app: "nginx", component: "nginx"
             }) + { spec+: {
-                loadBalancerIP: "35.237.4.241",
+                loadBalancerIP: config.externalIps.portal,
                 type: "LoadBalancer"
             }},
 
@@ -100,7 +103,7 @@ local nginx(config) = {
             k.svc.selector({
                 app: "nginx", component: "nginx"
             }) + { spec+: {
-                loadBalancerIP: "34.75.229.50",
+                loadBalancerIP: config.externalIps.auth,
                 type: "LoadBalancer"
             }}
 

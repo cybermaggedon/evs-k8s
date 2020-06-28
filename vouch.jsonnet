@@ -13,11 +13,11 @@ local vouch(config) = {
     local envs = [
         k.env.new("VOUCH_PORT", "9090"),
         k.env.new("VOUCH_LISTEN", "0.0.0.0"),
-        k.env.new("VOUCH_DOMAINS", "cyberapocalypse.co.uk"),
-        k.env.new("OAUTH_PROVIDER", "google"),
-        k.env.new("OAUTH_CLIENT_ID", "749175465304-g21av5qp43daojukj3gcn1igb9ri6r3j.apps.googleusercontent.com"),
-        k.env.new("OAUTH_CLIENT_SECRET", "_CqoHoDLuzfwochoZ_LbjlUq"),
-        k.env.new("OAUTH_CALLBACK_URL", "https://login.cyberapocalypse.co.uk/auth")
+        k.env.new("VOUCH_DOMAINS", config.domain),
+        k.env.new("OAUTH_PROVIDER", config.oauth.provider),
+        k.env.new("OAUTH_CLIENT_ID", config.oauth.client_id),
+        k.env.new("OAUTH_CLIENT_SECRET", config.oauth.client_secret),
+        k.env.new("OAUTH_CALLBACK_URL", config.oauth.callback_url)
     ],
 
     // Container definition.
