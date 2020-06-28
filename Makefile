@@ -1,7 +1,7 @@
 
 all: all.json
 
-SOURCES=$(wildcard *.jsonnet */*.jsonnet */*.libsonnet)
+SOURCES=$(wildcard *.jsonnet */*.jsonnet */*.libsonnet *.yml)
 all.yaml: all.json
 	./json2yaml $< > $@
 
