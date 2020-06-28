@@ -38,16 +38,20 @@
         command: c
     },
 
-   requests(r):: {
-      resources+: {
-        requests: r
-      }
-   },
+    args(c):: {
+        args: c
+    },
 
-   limits(r):: {
-      resources+: {
-        limits: r
-      }
-   }
+    requests(r):: {
+        resources+: {
+            requests: r
+        }
+    },
 
- }
+    limits(r):: {
+        resources+: {
+            limits: r
+        }
+    }
+
+}

@@ -25,6 +25,10 @@ local prometheus(config) = {
     // Container definition.
     local containers = [
         k.container.new("prometheus", "prom/prometheus:v2.19.1") +
+            k.container.args([
+                "--web.external-url=https://portal.cyberapocalypse.co.uk/prometheus",
+                "--web.route-prefix=/prometheus"
+            ]) +
             k.container.ports(ports) +
             k.container.volumeMounts(volumeMounts) +
             k.container.env(envs) +

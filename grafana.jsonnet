@@ -27,7 +27,7 @@ local grafana(config) = {
     // Environment variables
     local envs = [
            k.env.new("GF_SERVER_ROOT_URL",
-           "https://portal.cyberapocalypse.co.uk/grafana"),
+               "https://portal.cyberapocalypse.co.uk/grafana"),
            k.env.new("GF_AUTH_ANONYMOUS_ENABLED", "true"),
            k.env.new("GF_ORG_NAME", "cybermaggedon"),
            k.env.new("GF_AUTH_ANONYMOUS_ORG_ROLE", "Admin")
