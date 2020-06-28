@@ -23,6 +23,9 @@ local analytic(config, name, version, replicas, env) =
     local image = "docker.io/cybermaggedon/" + name + ":" + version;
     k.simple.new(name) +
         k.simple.image(image) +
+        k.simple.ports([
+            {name: "metrics", port: 8088, protocol: "TCP"}
+        ]) +
         k.simple.component("analytics") +
         k.simple.replicas(replicas) +
         k.simple.envs([
