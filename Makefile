@@ -1,5 +1,8 @@
 
-all: all.json
+all: all.yaml
+
+apply: all
+	kubectl apply -f all.yaml
 
 SOURCES=$(wildcard *.jsonnet */*.jsonnet */*.libsonnet *.yml */*.yml *.conf)
 all.yaml: all.json
