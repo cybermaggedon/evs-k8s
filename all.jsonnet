@@ -15,7 +15,8 @@ local imports = std.flattenArrays([
     import "cybermon.jsonnet",
     import "analytics/analytics.jsonnet",
     import "vouch.jsonnet",
-    import "nginx.jsonnet"
+    import "nginx.jsonnet",
+    import "keycloak.jsonnet"
 ]);
 
 // Compile the resource list.
