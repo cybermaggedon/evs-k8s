@@ -21,7 +21,8 @@ local vouch(config) = {
         k.env.new("OAUTH_AUTH_URL", config.oauth.auth_url),
         k.env.new("OAUTH_TOKEN_URL", config.oauth.token_url),
         k.env.new("OAUTH_USER_INFO_URL", config.oauth.userinfo_url),
-        k.env.new("OAUTH_SCOPES", config.oauth.scopes)
+        k.env.new("OAUTH_SCOPES", config.oauth.scopes),
+        k.env.new("VOUCH_JWT_SECRET", config.oauth.vouch_jwt_secret)
     ],
 
     // Container definition.

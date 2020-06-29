@@ -13,16 +13,22 @@ local keycloak(config) = {
     local envs = [
         k.env.new("KEYCLOAK_USER", "admin"),
         // FIXNE: Not good.
-        k.env.new("KEYCLOAK_PASSWORD", "FIXMEthisisbad"),
+        k.env.new("KEYCLOAK_PASSWORD", config.oauth.keycloak_admin_password),
         k.env.new("JAVA_OPTS", "-Xms128m -Xmx256m"),
         k.env.new("KEYCLOAK_FRONTEND_URL", config.accounts_url + "/auth"),
         k.env.new("PROXY_ADDRESS_FORWARDING", "true")
+    ],
+
+    // Volume mount points
+    local volumeMounts = [
+        k.mount.new("data", "/opt/jboss/keycloak/standalone/data")
     ],
 
     // Container definition.
     local containers = [
         k.container.new("keycloak", "quay.io/keycloak/keycloak:10.0.2") +
             k.container.ports(ports) +
+            k.container.volumeMounts(volumeMounts) +
             k.container.env(envs) +
             k.container.limits({
                 memory: "512M", cpu: "1.0"
@@ -30,6 +36,12 @@ local keycloak(config) = {
             k.container.requests({
                 memory: "512M", cpu: "0.05"
             })
+    ],
+
+    // Volumes - this invokes a pvc
+    local volumes = [
+        k.volume.new("data") +
+            k.volume.pvc("keycloak")
     ],
 
     // Deployment definition.  id is the node ID.
@@ -50,7 +62,17 @@ local keycloak(config) = {
                 app: "keycloak",
                 component: "keycloak"
             }) +
-            k.deployment.containers(containers)
+            k.deployment.containers(containers) +
+            k.deployment.volumes(volumes) +
+            {
+                spec+: { template+: { spec+: {
+                    securityContext: {
+                        runAsUser: 1000,
+                        runAsGroup: 0,
+                        fsGroup: 0
+                    }
+                } } }
+            }
     ],
 
     // Ports declared on the service.
@@ -70,8 +92,18 @@ local keycloak(config) = {
 
     ],
 
+    local storageClasses = [
+        k.storageClass.new("keycloak")
+    ],
+
+    local pvcs = [
+        k.pvc.new("keycloak") +
+            k.pvc.storageClass("keycloak") +
+            k.pvc.size("10G")
+    ],
+
     // Function which returns resource definitions - deployments and services.
-    resources:: deployments + services
+    resources:: deployments + services + storageClasses + pvcs
 
 };
 
