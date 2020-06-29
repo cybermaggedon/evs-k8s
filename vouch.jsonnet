@@ -17,7 +17,11 @@ local vouch(config) = {
         k.env.new("OAUTH_PROVIDER", config.oauth.provider),
         k.env.new("OAUTH_CLIENT_ID", config.oauth.client_id),
         k.env.new("OAUTH_CLIENT_SECRET", config.oauth.client_secret),
-        k.env.new("OAUTH_CALLBACK_URL", config.oauth.callback_url)
+        k.env.new("OAUTH_CALLBACK_URL", config.oauth.callback_url),
+        k.env.new("OAUTH_AUTH_URL", config.oauth.auth_url),
+        k.env.new("OAUTH_TOKEN_URL", config.oauth.token_url),
+        k.env.new("OAUTH_USER_INFO_URL", config.oauth.userinfo_url),
+        k.env.new("OAUTH_SCOPES", config.oauth.scopes)
     ],
 
     // Container definition.

@@ -46,10 +46,18 @@
 
     local callback_url = "https://%s/auth/auth" % self.portal_host,
     oauth: {
-        provider:  "google",
-        client_id: "749175465304-g21av5qp43daojukj3gcn1igb9ri6r3j.apps.googleusercontent.com",
-        client_secret: "_CqoHoDLuzfwochoZ_LbjlUq",
-        callback_url: callback_url
+        provider:  "oidc",
+        client_id: "cyberapocalypse",
+        client_secret: "x",
+        callback_url: callback_url,
+        auth_url: "https://accounts.portal.cyberapocalypse.co.uk/auth/realms/cyberapocalypse/protocol/openid-connect/auth",
+
+        // Would prefer to use public DNS https:... addresses, but the
+        // certificate won't be recognised by vouch, so we're going direct
+        // to the keycloak service.
+        token_url: "http://keycloak:8080/auth/realms/cyberapocalypse/protocol/openid-connect/token",
+        userinfo_url: "http://keycloak:8080/auth/realms/cyberapocalypse/protocol/openid-connect/userinfo",
+        scopes: "openid,email,profile"
     },
 
     externalIps: {
