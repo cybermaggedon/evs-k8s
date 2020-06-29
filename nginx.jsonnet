@@ -4,8 +4,7 @@ local k = import "defs.libsonnet";
 
 local tmpl = importstr "nginx.conf";
 local amend(str, config) =
-    str % [config.auth_host, config.portal_host, config.auth_host,
-        config.auth_host];
+    str % [config.portal_host, config.portal_host, config.portal_host];
 
 local nginx(config) = {
 

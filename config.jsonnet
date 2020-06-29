@@ -34,18 +34,17 @@
 
     domain: "portal.cyberapocalypse.co.uk",
 
-    auth_host: "login." + self.domain,
     portal_host: "portal." + self.domain,
 
     // No trailing slash.
     portal_url: "https://" + self.portal_host,
 
-    local domain = self.domain,
+    local portal = self.portal_host,
     oauth: {
         provider:  "google",
         client_id: "749175465304-g21av5qp43daojukj3gcn1igb9ri6r3j.apps.googleusercontent.com",
         client_secret: "_CqoHoDLuzfwochoZ_LbjlUq",
-        callback_url: "https://login.%s/auth" % domain
+        callback_url: "https://%s/auth/auth" % portal
     },
 
     externalIps: {
@@ -53,3 +52,4 @@
     }
     
 }
+
