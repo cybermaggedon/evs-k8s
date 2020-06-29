@@ -31,10 +31,10 @@
 
     // For auth purposes
     auth_domain: "cyberapocalypse.co.uk",
-
     domain: "portal.cyberapocalypse.co.uk",
 
-    portal_host: "portal." + self.domain,
+    portal_name: "test",
+    portal_host: self.portal_name + "." + self.domain,
 
     // No trailing slash.
     portal_url: "https://" + self.portal_host,

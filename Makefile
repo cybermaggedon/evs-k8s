@@ -26,7 +26,7 @@ go:
 	GOPATH=$$(pwd)/go go get ${CERT_TOOLS}
 	GOPATH=$$(pwd)/go go install ${CERT_TOOLS}
 
-DOMAIN=portal.cyberapocalypse.co.uk
+PORTAL=test.portal.cyberapocalypse.co.uk
 ADMIN=admin@cyberapocalypse.co.uk
 CERT_DIR=web-certs
 ORG=cyberapocalypse
@@ -42,8 +42,8 @@ ${CERT_DIR}/ca.crt:
 ${CERT_DIR}/portal.crt:
 	go/bin/create-key > ${CERT_DIR}/portal.key
 	go/bin/create-cert-request -k ${CERT_DIR}/portal.key \
-	    --hosts '1.2.3.4' --hosts '${DOMAIN}' --hosts '*.${DOMAIN}' \
-	    -E ${ADMIN} -N 'cert for ${DOMAIN}'  > ${CERT_DIR}/portal.req
+	    --hosts '1.2.3.4' --hosts '${PORTAL}' \
+	    -E ${ADMIN} -N '${PORTAL}'  > ${CERT_DIR}/portal.req
 	go/bin/create-cert -r ${CERT_DIR}/portal.req -k ${CERT_DIR}/ca.key \
 	    -c ${CERT_DIR}/ca.crt -S > ${CERT_DIR}/portal.crt
 	cat ${CERT_DIR}/ca.crt >> ${CERT_DIR}/portal.crt
