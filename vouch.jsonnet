@@ -13,7 +13,7 @@ local vouch(config) = {
     local envs = [
         k.env.new("VOUCH_PORT", "9090"),
         k.env.new("VOUCH_LISTEN", "0.0.0.0"),
-        k.env.new("VOUCH_DOMAINS", config.domain),
+        k.env.new("VOUCH_DOMAINS", config.auth_domain),
         k.env.new("OAUTH_PROVIDER", config.oauth.provider),
         k.env.new("OAUTH_CLIENT_ID", config.oauth.client_id),
         k.env.new("OAUTH_CLIENT_SECRET", config.oauth.client_secret),

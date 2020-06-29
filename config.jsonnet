@@ -29,7 +29,10 @@
         instances: 1
     },
 
-    domain: "cyberapocalypse.co.uk",
+    // For auth purposes
+    auth_domain: "cyberapocalypse.co.uk",
+
+    domain: "portal.cyberapocalypse.co.uk",
 
     auth_host: "login." + self.domain,
     portal_host: "portal." + self.domain,
@@ -46,8 +49,7 @@
     },
 
     externalIps: {
-        portal: "35.237.4.241",
-        auth:  "34.75.229.50"
+        portal: "35.196.5.207",
     }
     
 }

@@ -17,8 +17,7 @@ local nginx(config) = {
     // Volume mount points
     local volumeMounts = [
         k.mount.new("config", "/etc/nginx/conf.d/"),
-        k.mount.new("portal-keys", "/etc/tls/portal/"),
-        k.mount.new("login-keys", "/etc/tls/login/")
+        k.mount.new("portal-keys", "/etc/tls/portal/")
     ],
 
     // Environment variables
@@ -49,9 +48,7 @@ local nginx(config) = {
         k.volume.new("config") +
             k.volume.fromConfigMap("nginx-config"),
         k.volume.new("portal-keys") +
-            k.volume.fromSecret("portal-keys"),
-        k.volume.new("login-keys") +
-            k.volume.fromSecret("login-keys")
+            k.volume.fromSecret("portal-keys")
     ],
 
     // Deployment definition.  id is the node ID.
@@ -93,17 +90,6 @@ local nginx(config) = {
                 app: "nginx", component: "nginx"
             }) + { spec+: {
                 loadBalancerIP: config.externalIps.portal,
-                type: "LoadBalancer"
-            }},
-
-        // login...
-        k.svc.new("login") +
-            k.svc.labels({app: "nginx", component: "nginx"}) +
-            k.svc.ports(servicePorts) +
-            k.svc.selector({
-                app: "nginx", component: "nginx"
-            }) + { spec+: {
-                loadBalancerIP: config.externalIps.auth,
                 type: "LoadBalancer"
             }}
 
