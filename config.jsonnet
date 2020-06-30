@@ -32,6 +32,8 @@
     // For auth purposes
     auth_domain: "cyberapocalypse.co.uk",
 
+    allow_all_users: "true",
+
     base_domain: "cyberapocalypse.co.uk",
 
     id: "portal",
@@ -58,11 +60,14 @@
         token_url: "http://keycloak:8080/auth/realms/cyberapocalypse/protocol/openid-connect/token",
         userinfo_url: "http://keycloak:8080/auth/realms/cyberapocalypse/protocol/openid-connect/userinfo",
         scopes: "openid,email,profile",
-        // dd bs=50 count=1 if=/dev/urandom | base64
-        vouch_jwt_secret: "klthI35b4yvWXpdVrzTajQb6U1D9rKamQ64jcqIcembpP0g5UKOWA68CJUYgpKGt6pA=",
 
-        // Used to initialise
-        keycloak_admin_password: "8DM2Tu2X/Vkp5VGKHRtg2U2GBBbZsFdCKd+CMlU3"
+        // Don't use these secrets
+        // dd bs=50 count=1 if=/dev/urandom | base64
+        vouch_jwt_secret: "asdklajsldjaslkdjalskdjad",
+
+        // Used to initialise initial admin account, password should be
+        // changed.
+        keycloak_admin_password: "sldkfjlsdfjsdlfjsldfjlsdkfjdslk"
     },
 
     externalIps: {
