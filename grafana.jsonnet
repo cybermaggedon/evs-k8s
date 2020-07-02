@@ -49,10 +49,13 @@ local grafana(config) = {
 
     local configMaps = [
         k.configMap.new("grafana-dashboard-prov") +
+            k.configMap.labels({app: "grafana", component: "grafana"}) +
             k.configMap.data({"dashboard.yml": dash_cfg}),
         k.configMap.new("grafana-datasource-prov") +
+            k.configMap.labels({app: "grafana", component: "grafana"}) +
             k.configMap.data({"datasource.yml": source_cfg}),
         k.configMap.new("grafana-dashboards") +
+            k.configMap.labels({app: "grafana", component: "grafana"}) +
             k.configMap.data({"dashboard.json": dashboard}),
     ],
 

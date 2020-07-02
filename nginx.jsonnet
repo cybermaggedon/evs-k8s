@@ -40,6 +40,7 @@ local nginx(config) = {
 
     local configMaps = [
         k.configMap.new("nginx-config") +
+            k.configMap.labels({app: "nginx", component: "nginx"}) +
             k.configMap.data({"default.conf": amend(tmpl, config)})
     ],
 

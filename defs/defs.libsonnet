@@ -80,6 +80,9 @@
                 name: name
             }
         },
+        labels(l):: {
+            metadata+: { labels: l }
+        },
         data(m): {
             data+: m
         }

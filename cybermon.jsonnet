@@ -50,6 +50,7 @@ local pulsar(config) = {
 
     local configMaps = [
         k.configMap.new("cybermon-config") +
+            k.configMap.labels({app: "cybermon", component: "cybermon"}) +
             k.configMap.data({"protostream.lua": cfg})
     ],
 

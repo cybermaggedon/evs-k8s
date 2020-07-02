@@ -52,6 +52,7 @@ local prometheus(config) = {
 
     local configMaps = [
         k.configMap.new("prometheus-config") +
+            k.configMap.labels({app: "prometheus", component: "prometheus"}) +
             k.configMap.data({"prometheus.yml": cfg})
     ],
 

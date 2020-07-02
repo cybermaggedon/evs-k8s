@@ -39,7 +39,9 @@ local g(config, id, table, schema) = {
         ],
 
         local configMaps = [
+            local gaffer = "gaffer-" + id;
             k.configMap.new(id + "-schema") +
+                k.configMap.labels({app: gaffer, component: "gaffer"}) +
                 k.configMap.data({"schema.json": schema})
         ],
 
