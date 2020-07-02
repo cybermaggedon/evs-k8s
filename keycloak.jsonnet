@@ -93,11 +93,13 @@ local keycloak(config) = {
     ],
 
     local storageClasses = [
-        k.storageClass.new("keycloak")
+        k.storageClass.new("keycloak") +
+            k.storageClass.labels({app: "keycloak", component: "keycloak"})
     ],
 
     local pvcs = [
         k.pvc.new("keycloak") +
+            k.pvc.labels({app: "keycloak", component: "keycloak"}) +
             k.pvc.storageClass("keycloak") +
             k.pvc.size("10G")
     ],

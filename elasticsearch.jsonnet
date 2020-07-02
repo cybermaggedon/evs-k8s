@@ -73,11 +73,13 @@ local elasticsearch(config) = {
     ],
 
     local storageClasses = [
-        k.storageClass.new("elasticsearch")
+        k.storageClass.new("elasticsearch") +
+            k.storageClass.labels({app: "elasticsearch", component: "elasticsearch"})
     ],
 
     local pvcs = [
         k.pvc.new("elasticsearch-%04d" % id) +
+            k.pvc.labels({app: "elasticsearch", component: "elasticsearch"}) +
             k.pvc.storageClass("elasticsearch") +
             k.pvc.size("10G")
             for id in std.range(0, config.elasticsearch.instances - 1)

@@ -35,7 +35,10 @@
             },
             provisioner: "kubernetes.io/gce-pd",
             reclaimPolicy: "Retain"
-        }
+        },
+        labels(l):: {
+            metadata+: { labels: l }
+        },
     },
 
     pvc:: {
@@ -49,6 +52,9 @@
                 accessModes: ["ReadWriteOnce"],
                 volumeMode: "Filesystem"
             }
+        },
+        labels(l):: {
+            metadata+: { labels: l }
         },
         storageClass(sc):: {
             spec+: {

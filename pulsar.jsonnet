@@ -69,11 +69,13 @@ local pulsar(config) = {
     ],
 
     local storageClasses = [
-        k.storageClass.new("pulsar")
+        k.storageClass.new("pulsar") +
+            k.storageClass.labels({app: "pulsar", component: "pulsar"})
     ],
 
     local pvcs = [
         k.pvc.new("pulsar-%04d" % id) +
+            k.pvc.labels({app: "pulsar", component: "pulsar"}) +
             k.pvc.storageClass("pulsar") +
             k.pvc.size("10G")
             for id in std.range(0, config.pulsar.instances -  1)

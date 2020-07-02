@@ -78,11 +78,13 @@ local zookeeper(config) = {
     ],
 
     local storageClasses = [
-        k.storageClass.new("zookeeper")
+        k.storageClass.new("zookeeper") +
+            k.storageClass.labels({app: "zookeeper", component: "gaffer"})
     ],
 
     local pvcs = [
         k.pvc.new("zookeeper-%04d" % id) +
+            k.pvc.labels({app: "zookeeper", component: "gaffer"}) +
             k.pvc.storageClass("zookeeper") +
             k.pvc.size("1G")
             for id in std.range(0, config.gaffer.zookeepers-1)

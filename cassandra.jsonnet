@@ -67,11 +67,13 @@ local cassandra(config) = {
     ],
 
     local storageClasses = [
-        k.storageClass.new("cassandra")
+        k.storageClass.new("cassandra") +
+            k.storageClass.labels({app: "cassandra", component: "cassandra"})
     ],
 
     local pvcs = [
         k.pvc.new("cassandra-%04d" % id) +
+            k.pvc.labels({app: "cassandra", component: "cassandra"}) +
             k.pvc.storageClass("cassandra") +
             k.pvc.size("10G")
             for id in std.range(0, config.cassandra.instances - 1)

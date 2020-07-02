@@ -92,11 +92,13 @@ local hadoop(config) = {
     ],
 
     local storageClasses = [
-        k.storageClass.new("hadoop")
+        k.storageClass.new("hadoop") +
+            k.storageClass.labels({app: "hadoop", component: "gaffer"})
     ],
 
     local pvcs = [
         k.pvc.new("hadoop-%04d" % id) +
+            k.pvc.labels({app: "hadoop", component: "gaffer"}) +
             k.pvc.storageClass("hadoop") +
             k.pvc.size("5G")
             for id in std.range(0, config.gaffer.hadoops - 1)
