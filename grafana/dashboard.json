@@ -253,7 +253,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(cassandra_loaded_sum[1m])",
+          "expr": "rate(cassandra_loaded[1m])",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
