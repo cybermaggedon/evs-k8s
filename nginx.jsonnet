@@ -7,6 +7,9 @@ local amend(str, config) =
     str % [config.portal_host, config.portal_host, config.portal_host,
         config.accounts_host];
 
+local page_index = importstr "index.html";
+local page_50x = importstr "50x.html";
+
 local nginx(config) = {
 
     // Ports used by deployments
@@ -17,7 +20,8 @@ local nginx(config) = {
     // Volume mount points
     local volumeMounts = [
         k.mount.new("config", "/etc/nginx/conf.d/"),
-        k.mount.new("portal-keys", "/etc/tls/portal/")
+        k.mount.new("portal-keys", "/etc/tls/portal/"),
+        k.mount.new("pages", "/usr/share/nginx/html/")
     ],
 
     // Environment variables
@@ -41,7 +45,13 @@ local nginx(config) = {
     local configMaps = [
         k.configMap.new("nginx-config") +
             k.configMap.labels({app: "nginx", component: "nginx"}) +
-            k.configMap.data({"default.conf": amend(tmpl, config)})
+            k.configMap.data({"default.conf": amend(tmpl, config)}),
+        k.configMap.new("web-pages") +
+            k.configMap.labels({app: "nginx", component: "nginx"}) +
+            k.configMap.data({
+                "index.html": page_index,
+                "50x.html": page_50x
+            })
     ],
 
     // Volumes - this invokes a pvc
@@ -49,7 +59,9 @@ local nginx(config) = {
         k.volume.new("config") +
             k.volume.fromConfigMap("nginx-config"),
         k.volume.new("portal-keys") +
-            k.volume.fromSecret("portal-keys")
+            k.volume.fromSecret("portal-keys"),
+        k.volume.new("pages") +
+            k.volume.fromConfigMap("web-pages"),
     ],
 
     // Deployment definition.  id is the node ID.
