@@ -10,6 +10,7 @@ local imports = std.flattenArrays([
     import "kibana.jsonnet",
     import "cassandra.jsonnet",
     import "pulsar.jsonnet",
+    import "pulsar-manager.jsonnet",
     import "grafana.jsonnet",
     import "prometheus.jsonnet",
     import "cybermon.jsonnet",
