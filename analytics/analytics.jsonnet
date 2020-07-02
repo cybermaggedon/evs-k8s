@@ -5,7 +5,7 @@ local k = import "defs.libsonnet";
 local analytics = [
   {n: "evs-geoip", v: "0.4.2", e: []},
   {n: "evs-detector", v: "0.4.2", e: []},
-  {n: "evs-elasticsearch", v: "0.4.2", e: [
+  {n: "evs-elasticsearch", v: "0.4.4", e: [
       ["ELASTICSEARCH_URL", "http://elasticsearch:9200"]
   ]},
   {n: "evs-threatgraph", v: "0.4.2", e: [
