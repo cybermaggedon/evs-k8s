@@ -4,6 +4,9 @@ local k = import "defs.libsonnet";
 
 local cassandra(config) = {
 
+    name:: "cassandra",
+    images:: ["cassandra:3.11.6"],
+
     // Ports used by deployments
     local ports() = [
         k.containerPort.newNamed("cassandra", 9042)
@@ -22,7 +25,7 @@ local cassandra(config) = {
 
     // Container definition.
     local containers(id) = [
-        k.container.new("cassandra", "cassandra:3.11.6") +
+        k.container.new("cassandra", self.images[0]) +
             k.container.ports(ports()) +
             k.container.volumeMounts(volumeMounts(id)) +
             k.container.env(envs) +

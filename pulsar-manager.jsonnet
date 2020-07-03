@@ -4,6 +4,9 @@ local k = import "defs.libsonnet";
 
 local pulsar_manager(config) = {
 
+    name:: "pulsar-manager",
+    images:: ["apachepulsar/pulsar-manager:v0.1.0"],
+
     // Ports used by deployments
     local ports = [
         k.containerPort.newNamed("ui", 9527)
@@ -27,8 +30,7 @@ local pulsar_manager(config) = {
 
     // Container definition.
     local containers = [
-        k.container.new("pulsar-manager",
-                "apachepulsar/pulsar-manager:v0.1.0") +
+        k.container.new("pulsar-manager", self.images[0]) +
             k.container.ports(ports) +
             k.container.volumeMounts(volumeMounts) +
             k.container.env(envs) +

@@ -10,6 +10,9 @@ local k = import "defs.libsonnet";
 
 local hadoop(config) = {
 
+    name:: "hadoop",
+    images:: ["cybermaggedon/hadoop:2.10.0"],
+
     // Ports used by deployments
     local ports = [
         k.containerPort.newNamed("namenode-http", 50070),
@@ -47,7 +50,7 @@ local hadoop(config) = {
 
     // Container definition.
     local containers(id, replication) = [
-        k.container.new("hadoop", "cybermaggedon/hadoop:2.10.0") +
+        k.container.new("hadoop", self.images[0]) +
             k.container.ports(ports) +
             k.container.volumeMounts(volumeMounts) +
             k.container.env(envs(id)) +

@@ -4,6 +4,9 @@ local k = import "defs.libsonnet";
 
 local elasticsearch(config) = {
 
+    name:: "elasticsearch",
+    images:: ["elasticsearch:7.7.1"],
+
     // Ports used by deployments
     local ports() = [
         k.containerPort.newNamed("elasticsearch", 9200)
@@ -26,7 +29,7 @@ local elasticsearch(config) = {
 
     // Container definition.
     local containers(id) = [
-        k.container.new("elasticsearch", "elasticsearch:7.7.1") +
+        k.container.new("elasticsearch", self.images[0]) +
             k.container.command(["bash", "-c",
             "sysctl -w vm.max_map_count=262144; chown -R elasticsearch:elasticsearch /usr/share/elasticsearch/data; /usr/local/bin/docker-entrypoint.sh"]) +
             k.container.ports(ports()) +

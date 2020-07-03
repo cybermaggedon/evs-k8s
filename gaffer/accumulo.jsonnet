@@ -18,6 +18,9 @@ local k = import "defs.libsonnet";
 
 local accumulo(config) = {
 
+    name:: "accumulo",
+    images:: ["cybermaggedon/accumulo-gaffer:1.12.0b"],
+    
     // Ports used by deployments
     local ports() = [
         k.containerPort.newNamed("master", 9999),
@@ -81,7 +84,7 @@ local accumulo(config) = {
 
     // Container definition for non-slave containers.
     local containers(proc, slaves, xks) = [
-        k.container.new("accumulo", "cybermaggedon/accumulo-gaffer:1.12.0b") +
+        k.container.new("accumulo", self.images[0]) +
             k.container.ports(ports()) +
             k.container.command(["/start-process", proc]) +
             k.container.env(envs(slaves, xks, -1, proc)) +

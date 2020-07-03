@@ -4,7 +4,13 @@ local k = import "defs.libsonnet";
 
 local cfg = importstr "protostream.lua";
 
-local pulsar(config) = {
+local cybermon(config) = {
+
+    name:: "cybermon",
+    images:: [
+        "docker.io/cybermaggedon/cyberprobe:2.5.1",
+        "docker.io/cybermaggedon/evs-input:0.4.2"
+    ],
 
     // Ports used by deployments
     local ports() = [
@@ -26,8 +32,7 @@ local pulsar(config) = {
 
     // Container definition.
     local containers = [
-        k.container.new("cybermon",
-                        "docker.io/cybermaggedon/cyberprobe:2.5.1") +
+        k.container.new("cybermon", self.images[0]) +
             k.container.command(["cybermon", "-p", "9000", "-c",  lua_cfg]) +
             k.container.ports(ports()) +
             k.container.volumeMounts(volumeMounts) +
@@ -38,8 +43,7 @@ local pulsar(config) = {
             k.container.requests({
                 memory: "256M", cpu: "0.1"
             }),
-        k.container.new("evs-input",
-                        "docker.io/cybermaggedon/evs-input:0.4.2") +
+        k.container.new("evs-input", self.images[1]) +
             k.container.limits({
                 memory: "128M", cpu: "1.0"
             }) +
@@ -105,5 +109,5 @@ local pulsar(config) = {
 };
 
 // Return the function which creates resources.
-[pulsar]
+[cybermon]
 

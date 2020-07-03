@@ -16,9 +16,9 @@ local threat_graph = gaffer("threat", "threatgraph", threat_graph_schema);
 
 // Compile the resource list.
 local resources(config) = [
-//    hadoop(config) +     // Hadoop.
-//    zookeeper(config) +		      // Zookeeper.
-//    accumulo(config) +   // Accumulo.
+    hadoop(config) +     // Hadoop.
+    zookeeper(config) +		      // Zookeeper.
+    accumulo(config) +   // Accumulo.
     risk_graph(config)];	      // Wildfly / REST API.
 
 // Output the resources.

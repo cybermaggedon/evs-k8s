@@ -4,6 +4,9 @@ local k = import "defs.libsonnet";
 
 local keycloak(config) = {
 
+    name:: "keycloak",
+    images:: ["quay.io/keycloak/keycloak:10.0.2"],
+
     // Ports used by deployments
     local ports = [
         k.containerPort.newNamed("http", 8080)
@@ -26,7 +29,7 @@ local keycloak(config) = {
 
     // Container definition.
     local containers = [
-        k.container.new("keycloak", "quay.io/keycloak/keycloak:10.0.2") +
+        k.container.new("keycloak", self.images[0]) +
             k.container.ports(ports) +
             k.container.volumeMounts(volumeMounts) +
             k.container.env(envs) +

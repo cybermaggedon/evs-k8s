@@ -166,7 +166,7 @@
         new(name):: {
             name: name,
             component:: name,
-            image:: "image-not-specified",
+            images:: [],
             envs:: [],
             labels:: local cmp = self.component; {
                 instance: name, app: name, component: cmp
@@ -177,7 +177,7 @@
             requests:: {},
             replicas:: 1,
             containers:: [
-                $.container.new(self.name, self.image) +
+                $.container.new(self.name, self.images[0]) +
                     self.command +
                     $.container.ports([
                         $.containerPort.newNamed(p.name, p.port)
@@ -215,8 +215,8 @@
         replicas(r):: {
             replicas:: r
         },
-        image(name):: {
-            image:: name
+        image(img):: {
+            images:: [img]
         },
         command(c):: {
             command:: $.container.command(c)

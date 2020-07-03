@@ -19,7 +19,7 @@ local analytics = [
   ]}
 ];
 
-local analytic(config, name, version, replicas, env) =
+local an(config, name, version, replicas, env) =
     local image = "docker.io/cybermaggedon/" + name + ":" + version;
     k.simple.new(name) +
         k.simple.image(image) +
@@ -39,14 +39,27 @@ local analytic(config, name, version, replicas, env) =
             memory: "128M", cpu: "0.05"
         });
 
+local analytic(name, version, replicas, env) =
+    local h(config) = an(config, name, version, replicas, env); h;
 
+local all = [
+    analytic(a.n, a.v, 1, a.e)
+    for a in analytics
+//  analytic("asd", "def", 1, [])
+];
+
+/*
 local all(config) = {
     resources:: std.flattenArrays([
        analytic(config, a.n, a.v, 1, a.e).resources
        for a in analytics
     ])
 };
+*/
 
-[ all
-]
+//[ all
+//]
+
+all
+
 

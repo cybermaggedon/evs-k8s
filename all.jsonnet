@@ -4,21 +4,7 @@ local k = import "defs.libsonnet";
 local config = import "config.jsonnet";
 
 // Import definitions for Gaffer stack
-local imports = std.flattenArrays([
-    import "gaffer/resources.jsonnet",
-    import "elasticsearch.jsonnet",
-    import "kibana.jsonnet",
-    import "cassandra.jsonnet",
-    import "pulsar.jsonnet",
-    import "pulsar-manager.jsonnet",
-    import "grafana.jsonnet",
-    import "prometheus.jsonnet",
-    import "cybermon.jsonnet",
-    import "analytics/analytics.jsonnet",
-    import "vouch.jsonnet",
-    import "nginx.jsonnet",
-    import "keycloak.jsonnet"
-]);
+local imports = import "resources.jsonnet";
 
 // Compile the resource list.
 local resources = [

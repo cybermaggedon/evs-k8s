@@ -9,7 +9,7 @@ local k = import "defs.libsonnet";
 
 local g(config, id, table, schema) = {
 
-        id:: "gaffer-" + id,
+        name:: "gaffer-" + id,
         images:: ["cybermaggedon/wildfly-gaffer:1.12.0b"],
 
         // Ports used by deployments

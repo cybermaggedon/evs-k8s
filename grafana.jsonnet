@@ -9,6 +9,9 @@ local dashboard = importstr "grafana/dashboard.json";
 
 local grafana(config) = {
 
+    name:: "grafana",
+    images:: ["grafana/grafana:7.0.3"],
+
     // Ports used by deployments
     local ports = [
         k.containerPort.newNamed("grafana", 3000)
@@ -35,7 +38,7 @@ local grafana(config) = {
 
     // Container definition.
     local containers = [
-        k.container.new("grafana", "grafana/grafana:7.0.3") +
+        k.container.new("grafana", self.images[0]) +
             k.container.ports(ports) +
             k.container.volumeMounts(volumeMounts) +
             k.container.env(envs) +

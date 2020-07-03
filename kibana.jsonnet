@@ -4,6 +4,9 @@ local k = import "defs.libsonnet";
 
 local kibana(config) = {
 
+    name:: "kibana",
+    images:: ["kibana:7.7.1"],
+
     // Ports used by deployments
     local ports = [
         k.containerPort.newNamed("kibana", 5601)
@@ -20,7 +23,7 @@ local kibana(config) = {
 
     // Container definition.
     local containers = [
-        k.container.new("kibana", "kibana:7.7.1") +
+        k.container.new("kibana", self.images[0]) +
             k.container.ports(ports) +
             k.container.env(envs) +
             k.container.limits({

@@ -9,6 +9,9 @@ local k = import "defs.libsonnet";
 
 local zookeeper(config) = {
 
+    name:: "zookeeper",
+    images:: ["cybermaggedon/zookeeper:3.6.1"],
+
     // Ports used by deployments
     local ports = [
         k.containerPort.newNamed("internal1", 2888),
@@ -29,7 +32,7 @@ local zookeeper(config) = {
 
     // Container definition.
     local containers(id, zks) = [
-        k.container.new("zookeeper", "cybermaggedon/zookeeper:3.6.1") +
+        k.container.new("zookeeper", self.images[0]) +
             k.container.ports(ports) +
             k.container.volumeMounts(volumeMounts(id)) +
             k.container.env(envs(id)) +

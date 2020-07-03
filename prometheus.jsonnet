@@ -7,6 +7,9 @@ local cfg = importstr "prometheus-config.yml";
 
 local prometheus(config) = {
 
+    name:: "prometheus",
+    images:: ["prom/prometheus:v2.19.1"],
+
     // Ports used by deployments
     local ports = [
         k.containerPort.newNamed("prometheus", 9090)
@@ -24,7 +27,7 @@ local prometheus(config) = {
 
     // Container definition.
     local containers = [
-        k.container.new("prometheus", "prom/prometheus:v2.19.1") +
+        k.container.new("prometheus", self.images[0]) +
             k.container.args([
                 "--web.external-url=%s/prometheus/" % config.portal_url,
                 "--web.route-prefix=/",

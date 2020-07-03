@@ -4,6 +4,9 @@ local k = import "defs.libsonnet";
 
 local pulsar(config) = {
 
+    name::  "pulsar",
+    images:: ["apachepulsar/pulsar:2.5.1"],
+
     // Ports used by deployments
     local ports() = [
         k.containerPort.newNamed("pulsar", 6650),
@@ -22,7 +25,7 @@ local pulsar(config) = {
 
     // Container definition.
     local containers(id) = [
-        k.container.new("pulsar", "apachepulsar/pulsar:2.5.1") +
+        k.container.new("pulsar", self.images[0]) +
             k.container.command(["bin/pulsar", "standalone"]) +
             k.container.ports(ports()) +
             k.container.volumeMounts(volumeMounts(id)) +

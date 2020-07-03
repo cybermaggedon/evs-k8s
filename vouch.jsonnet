@@ -4,6 +4,9 @@ local k = import "defs.libsonnet";
 
 local vouch(config) = {
 
+    name:: "vouch",
+    images:: ["voucher/vouch-proxy:0.16.2"],
+
     // Ports used by deployments
     local ports = [
         k.containerPort.newNamed("http", 9090)
@@ -28,7 +31,7 @@ local vouch(config) = {
 
     // Container definition.
     local containers = [
-        k.container.new("vouch", "voucher/vouch-proxy:0.16.2") +
+        k.container.new("vouch", self.images[0]) +
             k.container.ports(ports) +
             k.container.env(envs) +
             k.container.limits({

@@ -12,6 +12,9 @@ local page_50x = importstr "50x.html";
 
 local nginx(config) = {
 
+    name:: "nginx",
+    images:: ["nginx:1.19.0"],
+
     // Ports used by deployments
     local ports = [
         k.containerPort.newNamed("https", 443)
@@ -30,7 +33,7 @@ local nginx(config) = {
 
     // Container definition.
     local containers = [
-        k.container.new("nginx", "nginx:1.19.0") +
+        k.container.new("nginx", self.images[0]) +
             k.container.ports(ports) +
             k.container.volumeMounts(volumeMounts) +
             k.container.env(envs) +
