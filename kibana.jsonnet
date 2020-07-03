@@ -37,6 +37,7 @@ local kibana(config) = {
     // Deployment definition.
     local deployments = [
         k.deployment.new("kibana") +
+            k.deployment.namespace(config.namespace) +
             k.deployment.replicas(config.kibana.instances) +
             k.deployment.labels({
                 instance: "kibana",
@@ -65,6 +66,7 @@ local kibana(config) = {
 
         // One service for the first node (name node).
         k.svc.new("kibana") +
+            k.svc.namespace(config.namespace) +
             k.svc.labels({app: "kibana", component: "kibana"}) +
             k.svc.ports(servicePorts) +
             k.svc.selector({

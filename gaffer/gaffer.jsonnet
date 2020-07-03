@@ -41,6 +41,7 @@ local g(config, id, table, schema) = {
         local configMaps = [
             local gaffer = "gaffer-" + id;
             k.configMap.new(id + "-schema") +
+                k.configMap.namespace(config.namespace) +
                 k.configMap.labels({app: gaffer, component: "gaffer"}) +
                 k.configMap.data({"schema.json": schema})
         ],
@@ -72,6 +73,7 @@ local g(config, id, table, schema) = {
         local deployments = [
             local gaffer = "gaffer-" + id;
             k.deployment.new(gaffer) +
+                k.deployment.namespace(config.namespace) +
                 k.deployment.replicas(gaffers) +
                 k.deployment.labels({
                     instance: gaffer, app: gaffer, component: "gaffer"
@@ -94,6 +96,7 @@ local g(config, id, table, schema) = {
         local services = [
             // One service load-balanced across the replicas
             k.svc.new(id + "-graph") +
+                k.svc.namespace(config.namespace) +
                 k.svc.labels({app: "gaffer-" + id, component: "gaffer"}) +
                 k.svc.ports(servicePorts) +
                 k.svc.selector({app: "gaffer-" + id, component: "gaffer"})

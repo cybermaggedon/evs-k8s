@@ -11,9 +11,11 @@ all.yaml: all.json
 all.json: ${SOURCES}
 	jsonnet -J defs all.jsonnet > $@
 
+NS=cyberapocalypse
+
 upload-secrets:
-	-kubectl delete secret portal-keys
-	kubectl create secret generic portal-keys \
+	-kubectl -n ${NS} delete secret portal-keys
+	kubectl -n ${NS} create secret generic portal-keys \
 	    --from-file=server.key=web-certs/server.key \
 	    --from-file=server.crt=web-certs/server.crt
 

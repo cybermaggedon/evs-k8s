@@ -55,6 +55,7 @@ local zookeeper(config) = {
         local name = "zk%d" % (id + 1);
         local zks = zookeeperList(config.gaffer.zookeepers);
         k.deployment.new(name) +
+            k.deployment.namespace(config.namespace) +
             k.deployment.containers(containers(id, zks)) +
             k.deployment.labels({
                 instance: name, app: "zk", component: "gaffer"
@@ -87,6 +88,7 @@ local zookeeper(config) = {
 
     local pvcs = [
         k.pvc.new("zookeeper-%04d" % id) +
+            k.pvc.namespace(config.namespace) +
             k.pvc.labels({app: "zookeeper", component: "gaffer"}) +
             k.pvc.storageClass("zookeeper") +
             k.pvc.size("1G")
@@ -106,6 +108,7 @@ local zookeeper(config) = {
         // One service for each Zookeeper to allow it to be discovered by
         // Zookeeper name.
         k.svc.new("zk") +
+            k.svc.namespace(config.namespace) +
             k.svc.labels({app: "zk", component: "gaffer"}) +
             k.svc.selector({app: "zk"}) +
             k.svc.ports(servicePorts) +

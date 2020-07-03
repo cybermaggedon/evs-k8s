@@ -47,9 +47,11 @@ local nginx(config) = {
 
     local configMaps = [
         k.configMap.new("nginx-config") +
+            k.configMap.namespace(config.namespace) +
             k.configMap.labels({app: "nginx", component: "nginx"}) +
             k.configMap.data({"default.conf": amend(tmpl, config)}),
         k.configMap.new("web-pages") +
+            k.configMap.namespace(config.namespace) +
             k.configMap.labels({app: "nginx", component: "nginx"}) +
             k.configMap.data({
                 "index.html": page_index,
@@ -70,6 +72,7 @@ local nginx(config) = {
     // Deployment definition.  id is the node ID.
     local deployments = [
         k.deployment.new("nginx") +
+            k.deployment.namespace(config.namespace) +
             k.deployment.labels({
                 instance: "nginx",
                 app: "nginx",
@@ -100,6 +103,7 @@ local nginx(config) = {
 
         // portal...
         k.svc.new("portal") +
+            k.svc.namespace(config.namespace) +
             k.svc.labels({app: "nginx", component: "nginx"}) +
             k.svc.ports(servicePorts) +
             k.svc.selector({

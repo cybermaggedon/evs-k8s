@@ -55,13 +55,15 @@ local prometheus(config) = {
 
     local configMaps = [
         k.configMap.new("prometheus-config") +
+            k.configMap.namespace(config.namespace) +
             k.configMap.labels({app: "prometheus", component: "prometheus"}) +
-            k.configMap.data({"prometheus.yml": cfg})
+            k.configMap.data({"prometheus.yml": cfg % config.namespace})
     ],
 
     // Deployment definition.  id is the node ID.
     local deployments = [
         k.deployment.new("prometheus") +
+            k.deployment.namespace(config.namespace) +
             k.deployment.labels({
                 instance: "prometheus",
                 app: "prometheus",
@@ -93,6 +95,7 @@ local prometheus(config) = {
 
         // One service for the first node (name node).
         k.svc.new("prometheus") +
+            k.svc.namespace(config.namespace) +
             k.svc.labels({app: "prometheus", component: "prometheus"}) +
             k.svc.ports(servicePorts) +
             k.svc.selector({
@@ -105,7 +108,8 @@ local prometheus(config) = {
         apiVersion: "rbac.authorization.k8s.io/v1beta1",
         kind: "ClusterRole",
         metadata: {
-            name: "prometheus"
+            name: "prometheus",
+            namespace: config.namespace
         },
         rules: [
             {
@@ -132,7 +136,7 @@ local prometheus(config) = {
         kind: "ServiceAccount",
         metadata: {
             name: "prometheus",
-            namespace: "default"
+            namespace: config.namespace
         }
     }],
 
@@ -140,7 +144,8 @@ local prometheus(config) = {
         apiVersion: "rbac.authorization.k8s.io/v1beta1",
         kind: "ClusterRoleBinding",
         metadata: {
-            name: "prometheus"
+            name: "prometheus",
+            namespace: config.namespace
         },
         roleRef: {
             apiGroup: "rbac.authorization.k8s.io",
@@ -151,7 +156,7 @@ local prometheus(config) = {
             {
                 kind: "ServiceAccount",
                 name: "prometheus",
-                namespace: "default"
+                namespace: config.namespace
             }
         ]
     }],

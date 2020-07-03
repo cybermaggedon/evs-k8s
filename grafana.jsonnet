@@ -52,12 +52,15 @@ local grafana(config) = {
 
     local configMaps = [
         k.configMap.new("grafana-dashboard-prov") +
+            k.configMap.namespace(config.namespace) +
             k.configMap.labels({app: "grafana", component: "grafana"}) +
             k.configMap.data({"dashboard.yml": dash_cfg}),
         k.configMap.new("grafana-datasource-prov") +
+            k.configMap.namespace(config.namespace) +
             k.configMap.labels({app: "grafana", component: "grafana"}) +
             k.configMap.data({"datasource.yml": source_cfg}),
         k.configMap.new("grafana-dashboards") +
+            k.configMap.namespace(config.namespace) +
             k.configMap.labels({app: "grafana", component: "grafana"}) +
             k.configMap.data({"dashboard.json": dashboard}),
     ],
@@ -75,6 +78,7 @@ local grafana(config) = {
     // Deployment definition.  id is the node ID.
     local deployments = [
         k.deployment.new("grafana") +
+            k.deployment.namespace(config.namespace) +
             k.deployment.labels({
                 instance: "grafana",
                 app: "grafana",
@@ -103,6 +107,7 @@ local grafana(config) = {
 
         // One service for the first node (name node).
         k.svc.new("grafana") +
+            k.svc.namespace(config.namespace) +
             k.svc.labels({app: "grafana", component: "grafana"}) +
             k.svc.ports(servicePorts) +
             k.svc.selector({

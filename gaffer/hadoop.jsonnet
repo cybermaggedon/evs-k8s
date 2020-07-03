@@ -71,6 +71,7 @@ local hadoop(config) = {
     // Deployment definition.  id is the node ID.
     local deployment(id, replication) = 
         k.deployment.new("hadoop%04d" % id) +
+            k.deployment.namespace(config.namespace) +
             k.deployment.labels({
                 instance: "hadoop%04d" % id,
                 app: "hadoop",
@@ -101,6 +102,7 @@ local hadoop(config) = {
 
     local pvcs = [
         k.pvc.new("hadoop-%04d" % id) +
+            k.pvc.namespace(config.namespace) +
             k.pvc.labels({app: "hadoop", component: "gaffer"}) +
             k.pvc.storageClass("hadoop") +
             k.pvc.size("5G")
@@ -119,6 +121,7 @@ local hadoop(config) = {
 
         // One service for the first node (name node).
         k.svc.new("hadoop0000") +
+            k.svc.namespace(config.namespace) +
             k.svc.labels({app: "hadoop", component: "gaffer"}) +
             k.svc.ports(servicePorts) +
             k.svc.selector({

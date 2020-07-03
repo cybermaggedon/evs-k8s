@@ -54,6 +54,7 @@ local cybermon(config) = {
 
     local configMaps = [
         k.configMap.new("cybermon-config") +
+            k.configMap.namespace(config.namespace) +
             k.configMap.labels({app: "cybermon", component: "cybermon"}) +
             k.configMap.data({"protostream.lua": cfg})
     ],
@@ -67,6 +68,7 @@ local cybermon(config) = {
     // Deployment definition.  id is the node ID.
     local deployments = [
         k.deployment.new("cybermon") +
+            k.deployment.namespace(config.namespace) +
             k.deployment.replicas(config.cybermon.instances) +
             k.deployment.labels({
                 instance: "cybermon",
@@ -96,6 +98,7 @@ local cybermon(config) = {
 
     local services = [
         k.svc.new("cybermon") +
+            k.svc.namespace(config.namespace) +
             k.svc.labels({app: "cybermon", component: "cybermon"}) +
             k.svc.ports(servicePorts) +
             k.svc.selector({

@@ -46,6 +46,7 @@ local cassandra(config) = {
     // Deployment definition.  id is the node ID.
     local deployment(id) = 
         k.deployment.new("cassandra-%04d" % id) +
+            k.deployment.namespace(config.namespace) +
             k.deployment.labels({
                 instance: "cassandra-%04d" % id,
                 app: "cassandra",
@@ -76,6 +77,7 @@ local cassandra(config) = {
 
     local pvcs = [
         k.pvc.new("cassandra-%04d" % id) +
+            k.pvc.namespace(config.namespace) +
             k.pvc.labels({app: "cassandra", component: "cassandra"}) +
             k.pvc.storageClass("cassandra") +
             k.pvc.size("10G")
@@ -92,6 +94,7 @@ local cassandra(config) = {
 
         // One service for the first node (name node).
         k.svc.new("cassandra") +
+            k.svc.namespace(config.namespace) +
             k.svc.labels({app: "cassandra", component: "cassandra"}) +
             k.svc.ports(servicePorts) +
             k.svc.selector({

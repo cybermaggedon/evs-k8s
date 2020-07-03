@@ -50,6 +50,7 @@ local keycloak(config) = {
     // Deployment definition.  id is the node ID.
     local deployments = [
         k.deployment.new("keycloak") +
+            k.deployment.namespace(config.namespace) +
             k.deployment.labels({
                 instance: "keycloak",
                 app: "keycloak",
@@ -87,6 +88,7 @@ local keycloak(config) = {
 
         // One service for the first node (name node).
         k.svc.new("keycloak") +
+            k.svc.namespace(config.namespace) +
             k.svc.labels({app: "keycloak", component: "keycloak"}) +
             k.svc.ports(servicePorts) +
             k.svc.selector({
@@ -102,6 +104,7 @@ local keycloak(config) = {
 
     local pvcs = [
         k.pvc.new("keycloak") +
+            k.pvc.namespace(config.namespace) +
             k.pvc.labels({app: "keycloak", component: "keycloak"}) +
             k.pvc.storageClass("keycloak") +
             k.pvc.size("10G")

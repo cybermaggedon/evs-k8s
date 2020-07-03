@@ -1,5 +1,18 @@
 {
 
+    namespace:: {
+        new(name):: {
+            apiVersion: "v1",
+            kind: "Namespace",
+            metadata: {
+                name: name
+            }
+        },
+        labels(l):: {
+            metadata+: { labels: l }
+        }
+    },
+
     deployment:: import "deployment.libsonnet",
 
     container:: import "container.libsonnet",
@@ -36,6 +49,11 @@
             provisioner: "kubernetes.io/gce-pd",
             reclaimPolicy: "Retain"
         },
+        namespace(n):: {
+            metadata+: {
+                netadatnamespace: n
+            }
+        },
         labels(l):: {
             metadata+: { labels: l }
         },
@@ -51,6 +69,11 @@
             spec: {
                 accessModes: ["ReadWriteOnce"],
                 volumeMode: "Filesystem"
+            }
+        },
+        namespace(n):: {
+            metadata+: {
+                namespace: n
             }
         },
         labels(l):: {
@@ -78,6 +101,11 @@
             kind: "ConfigMap",
             metadata+: {
                 name: name
+            }
+        },
+        namespace(n):: {
+            metadata+: {
+                namespace: n
             }
         },
         labels(l):: {
@@ -130,6 +158,12 @@
             kind: "Service",
             metadata+: {
                 name: n
+            }
+        },
+
+        namespace(n):: {
+            metadata+: {
+                namespace: n
             }
         },
 
@@ -188,6 +222,7 @@
                 ],
             deployments:: [
                 $.deployment.new(self.name) +
+                    $.deployment.namespace(self.namespace) +
                     $.deployment.replicas(self.replicas) +
                     $.deployment.labels(self.labels) +
                     $.deployment.containerLabels(self.labels) +
@@ -199,6 +234,7 @@
                 if self.ports != [] then
                 [
                     $.svc.new(self.name) +
+                    $.svc.namespace(self.namespace) +
                     $.svc.labels({app: n, component: c}) +
                     $.svc.ports([
                         $.svcPort.newNamed(p.name, p.port, p.port) +
@@ -208,6 +244,9 @@
                     $.svc.selector(self.labels)
                 ] else [],
             resources:: self.deployments + self.services
+        },
+        namespace(n):: {
+            namespace: n
         },
         component(name):: {
             component:: name

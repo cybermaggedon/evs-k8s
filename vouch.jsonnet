@@ -45,6 +45,7 @@ local vouch(config) = {
     // Deployment definition.  id is the node ID.
     local deployments = [
         k.deployment.new("vouch") +
+            k.deployment.namespace(config.namespace) +
             k.deployment.labels({
                 instance: "vouch",
                 app: "vouch",
@@ -72,6 +73,7 @@ local vouch(config) = {
 
         // One service for the first node (name node).
         k.svc.new("vouch") +
+            k.svc.namespace(config.namespace) +
             k.svc.labels({app: "vouch", component: "vouch"}) +
             k.svc.ports(servicePorts) +
             k.svc.selector({

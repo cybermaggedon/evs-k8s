@@ -52,6 +52,7 @@ local elasticsearch(config) = {
     // Deployment definition.  id is the node ID.
     local deployment(id) = 
         k.deployment.new("elasticsearch-%04d" % id) +
+            k.deployment.namespace(config.namespace) +
             k.deployment.labels({
                 instance: "elasticsearch-%04d" % id,
                 app: "elasticsearch",
@@ -82,6 +83,7 @@ local elasticsearch(config) = {
 
     local pvcs = [
         k.pvc.new("elasticsearch-%04d" % id) +
+            k.pvc.namespace(config.namespace) +
             k.pvc.labels({app: "elasticsearch", component: "elasticsearch"}) +
             k.pvc.storageClass("elasticsearch") +
             k.pvc.size("10G")
@@ -98,6 +100,7 @@ local elasticsearch(config) = {
 
         // One service for the first node (name node).
         k.svc.new("elasticsearch") +
+            k.svc.namespace(config.namespace) +
             k.svc.labels({app: "elasticsearch", component: "elasticsearch"}) +
             k.svc.ports(servicePorts) +
             k.svc.selector({

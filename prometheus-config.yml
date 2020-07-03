@@ -30,6 +30,9 @@ scrape_configs:
 
   kubernetes_sd_configs:
   - role: endpoints
+    namespaces:
+      names:
+      - %s
 
   relabel_configs:
 

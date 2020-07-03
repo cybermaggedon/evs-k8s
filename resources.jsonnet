@@ -1,6 +1,7 @@
 
 // Import definitions for everything
 std.flattenArrays([
+    import "namespace.jsonnet",
     import "gaffer/resources.jsonnet",
     import "elasticsearch.jsonnet",
     import "kibana.jsonnet",

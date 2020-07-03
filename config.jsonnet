@@ -2,6 +2,8 @@
 // Configuration values for sizing the cluster.
 {
 
+    namespace: "cyberapocalypse",
+
     // Gaffer sizing
     gaffer: {
         hadoops: 1,		// Number of Hadoop nodes.

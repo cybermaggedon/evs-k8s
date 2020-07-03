@@ -118,6 +118,7 @@ local accumulo(config) = {
     local deployment(proc) =
         local name = "accumulo-%s" % proc;
         k.deployment.new(name) +
+            k.deployment.namespace(config.namespace) +
             k.deployment.containers(containers(proc, slaves, zks)) +
             k.deployment.labels({
                 instance: name, app: "accumulo", component: "gaffer"
@@ -136,6 +137,7 @@ local accumulo(config) = {
     local slaveDeployment(id) =
         local name = "accumulo-slave%04d" % id;
         k.deployment.new(name) + 
+            k.deployment.namespace(config.namespace) +
             k.deployment.containers(slaveContainers(id, slaves, zks)) +
             k.deployment.labels({
                 instance: name, app: "accumulo", component: "gaffer"
@@ -185,6 +187,7 @@ local accumulo(config) = {
 
         // Services for the Accumulo master
         k.svc.new("accumulo") +
+            k.svc.namespace(config.namespace) +
             k.svc.ports(servicePorts) +
             k.svc.labels({app: "accumulo", component: "gaffer"}) +
             k.svc.clusterIp("None") +

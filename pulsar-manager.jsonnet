@@ -51,6 +51,7 @@ local pulsar_manager(config) = {
     // Deployment definition.  id is the node ID.
     local deployments = [
         k.deployment.new("pulsar-manager") +
+            k.deployment.namespace(config.namespace) +
             k.deployment.labels({
                 instance: "pulsar-manager",
                 app: "pulsar-manager",
@@ -82,6 +83,7 @@ local pulsar_manager(config) = {
 
     local pvcs = [
         k.pvc.new("pulsar-manager") +
+            k.pvc.namespace(config.namespace) +
             k.pvc.labels({app: "pulsar-manager", component: "pulsar"}) +
             k.pvc.storageClass("pulsar-manager") +
             k.pvc.size("10G")
@@ -89,6 +91,7 @@ local pulsar_manager(config) = {
 
     local services = [
         k.svc.new("pulsar-manager") +
+            k.svc.namespace(config.namespace) +
             k.svc.labels({app: "pulsar-manager", component: "pulsar"}) +
             k.svc.ports(servicePorts) +
             k.svc.selector({

@@ -11,6 +11,12 @@
         }
     },
 
+    namespace(n):: {
+        metadata+: {
+            namespace: n
+        }
+    },
+
     replicas(n):: {
         spec+: {
             replicas: n
